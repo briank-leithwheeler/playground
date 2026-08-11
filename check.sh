@@ -224,44 +224,45 @@ run_check 67 "JR4.C.5.1.1" \
     "[ \"\$(stat -c '%U:%G' /etc/ssh/sshd_config 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/ssh/sshd_config 2>/dev/null))) -le 384 ]"
 
 run_check 68 "JR4.C.5.1.11" \
-    "sshd -T 2>/dev/null | grep -Eq '^logingracetime\\s+[1-9][0-9]*$'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEh '^\\s*logingracetime\\s+' \"\${files[@]}\" | tail -n1 | awk '{v=\$2; exit !(v>=1 && v<=60)}'"
 
 run_check 69 "JR4.C.5.1.12" \
-    "sshd -T 2>/dev/null | grep -Eq '^loglevel\\s+(VERBOSE|INFO)$'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEq '^\\s*loglevel\\s+(VERBOSE|INFO)\\s*$' \"\${files[@]}\""
 
 run_check 70 "JR4.C.5.1.14" \
-    "sshd -T 2>/dev/null | awk '/^maxauthtries / {exit !(\$2<=4)} END {if (NR==0) exit 1}'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEh '^\\s*maxauthtries\\s+' \"\${files[@]}\" | tail -n1 | awk '{exit !(\$2<=4)}'"
 
 run_check 71 "JR4.C.5.1.15" \
-    "sshd -T 2>/dev/null | awk '/^maxsessions / {exit !(\$2<=10)} END {if (NR==0) exit 1}'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEh '^\\s*maxsessions\\s+' \"\${files[@]}\" | tail -n1 | awk '{exit !(\$2<=10)}'"
 
 run_check 72 "JR4.C.5.1.16" \
-    "sshd -T 2>/dev/null | grep -Eq '^maxstartups\\s+([0-9]+:[0-9]+:[0-9]+|[0-9]+)$'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEq '^\\s*maxstartups\\s+([0-9]+:[0-9]+:[0-9]+|[0-9]+)\\s*$' \"\${files[@]}\""
 
 run_check 73 "JR4.C.5.1.18" \
-    "sshd -T 2>/dev/null | grep -Eq '^permitrootlogin\\s+no$'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEq '^\\s*permitrootlogin\\s+no\\s*$' \"\${files[@]}\""
 
 run_check 74 "JR4.C.5.1.19" \
-    "sshd -T 2>/dev/null | grep -Eq '^permituserenvironment\\s+no$'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEq '^\\s*permituserenvironment\\s+no\\s*$' \"\${files[@]}\""
 
 run_check 75 "JR4.C.5.1.4" \
-    "sshd -T 2>/dev/null | grep -Eq '^(allowusers|allowgroups|denyusers|denygroups)\\s+'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEq '^\\s*(allowusers|allowgroups|denyusers|denygroups)\\s+' \"\${files[@]}\""
 
 run_check 76 "JR4.C.5.1.5" \
-    "banner=\$(sshd -T 2>/dev/null | awk '/^banner / {print \$2}'); [ -n \"\$banner\" ] && [ \"\$banner\" != 'none' ] && [ -f \"\$banner\" ]"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && banner=\$(grep -RIEh '^\\s*banner\\s+' \"\${files[@]}\" | tail -n1 | awk '{print \$2}'); [ -n \"\$banner\" ] && [ \"\$banner\" != 'none' ] && [ -f \"\$banner\" ]"
 
 run_check 77 "JR4.C.5.1.6" \
-    "sshd -T 2>/dev/null | grep -Eq '^ciphers\\s+.+'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEq '^\\s*ciphers\\s+.+' \"\${files[@]}\""
 
 run_check 78 "JR4.C.5.1.7" \
-    "sshd -T 2>/dev/null | grep -Eq '^clientaliveinterval\\s+[1-9][0-9]*$' && sshd -T 2>/dev/null | awk '/^clientalivecountmax / {exit !(\$2<=3)} END {if (NR==0) exit 1}'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEq '^\\s*clientaliveinterval\\s+[1-9][0-9]*\\s*$' \"\${files[@]}\" && grep -RIEh '^\\s*clientalivecountmax\\s+' \"\${files[@]}\" | tail -n1 | awk '{exit !(\$2<=3)}'"
 
 run_check 79 "JR4.C.5.1.8" \
-    "sshd -T 2>/dev/null | grep -Eq '^hostbasedauthentication\\s+no$'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEq '^\\s*hostbasedauthentication\\s+no\\s*$' \"\${files[@]}\""
 
 run_check 80 "JR4.C.5.1.9" \
-    "sshd -T 2>/dev/null | grep -Eq '^ignorerhosts\\s+yes$'"
+    "files=(/etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -RIEq '^\\s*ignorerhosts\\s+yes\\s*$' \"\${files[@]}\""
 
+printf "\n%s\n\n" "7b. Sudo Configuration"
 run_check 81 "JR4.C.5.2.3" \
     "files=(/etc/sudoers /etc/sudoers.d/*); [ \${#files[@]} -gt 0 ] && grep -RIEq '^\\s*Defaults\\s+.*logfile=' \"\${files[@]}\""
 
