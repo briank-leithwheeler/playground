@@ -15,9 +15,7 @@ run_check() {
     fi
 }
 
-# ------------------------------------------------------------------------------
-# 1. Filesystem Kernel Modules
-# ------------------------------------------------------------------------------
+printf "\n%s\n\n" "1. Filesystem Kernel Modules"
 run_check 1 "JR4.C.1.1.1.1" \
     "modprobe -n -v cramfs 2>&1 | grep -E -q 'install /bin/(true|false)' && ! lsmod | grep -q cramfs"
 
@@ -36,9 +34,7 @@ run_check 5 "JR4.C.1.1.1.5" \
 run_check 6 "JR4.C.1.1.1.6" \
     "modprobe -n -v usb-storage 2>&1 | grep -E -q 'install /bin/(true|false)' && ! lsmod | grep -q usb_storage"
 
-# ------------------------------------------------------------------------------
-# 2. Partition and Mount Options
-# ------------------------------------------------------------------------------
+printf "\n%s\n\n" "2. Partition and Mount Options"
 run_check 7 "JR4.C.1.1.2.1.1" \
     "mountpoint -q /tmp"
 
@@ -93,9 +89,7 @@ run_check 23 "JR4.C.1.1.2.7.2" \
 run_check 24 "JR4.C.1.1.2.7.3" \
     "! mountpoint -q /var/log/audit || findmnt -n -o OPTIONS --target /var/log/audit | grep -qw noexec"
 
-# ------------------------------------------------------------------------------
-# 3. AppArmor, Bootloader, and Process Hardening
-# ------------------------------------------------------------------------------
+printf "\n%s\n\n" "3. AppArmor, Bootloader, and Process Hardening"
 run_check 25 "JR4.C.1.2.1.2" \
     "cat /sys/module/apparmor/parameters/enabled 2>/dev/null | grep -q '^Y$'"
 
@@ -123,9 +117,7 @@ run_check 32 "JR4.C.1.4.4" \
 run_check 33 "JR4.C.1.4.5" \
     "! grep -Eiq '^\s*enabled\s*=\s*1\b' /etc/default/apport 2>/dev/null"
 
-# ------------------------------------------------------------------------------
-# 4. Banners and Access Controls
-# ------------------------------------------------------------------------------
+printf "\n%s\n\n" "4. Banners and Access Controls"
 run_check 34 "JR4.C.1.5.1" \
     "! grep -Eqs '(\\v|\\r|\\m|\\s)' /etc/motd 2>/dev/null"
 
@@ -156,9 +148,7 @@ run_check 42 "JR4.C.2.2.4" \
 run_check 43 "JR4.C.2.2.6" \
     "! dpkg -s ftp >/dev/null 2>&1"
 
-# ------------------------------------------------------------------------------
-# 5. Scheduled Tasks and Permissions
-# ------------------------------------------------------------------------------
+printf "\n%s\n\n" "5. Scheduled Tasks and Permissions"
 run_check 44 "JR4.C.2.4.1.2" \
     "[ \"\$(stat -c '%U:%G' /etc/crontab 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/crontab 2>/dev/null))) -le 384 ]"
 
@@ -183,9 +173,7 @@ run_check 50 "JR4.C.2.4.1.8" \
 run_check 51 "JR4.C.2.4.2.1" \
     "[ -f /etc/at.allow ] && [ ! -f /etc/at.deny ] && [ \"\$(stat -c '%U:%G' /etc/at.allow 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/at.allow 2>/dev/null))) -le 416 ]"
 
-# ------------------------------------------------------------------------------
-# 6. Network Configuration
-# ------------------------------------------------------------------------------
+printf "\n%s\n\n" "6. Network Configuration"
 run_check 52 "JR4.C.3.1.1" \
     "[ -z \"\$(find /sys/class/net -mindepth 2 -maxdepth 2 -name wireless 2>/dev/null)\" ]"
 
@@ -231,9 +219,7 @@ run_check 65 "JR4.C.4.2.5" \
 run_check 66 "JR4.C.4.2.6" \
     "ufw status verbose 2>/dev/null | grep -Eq 'Default:\s+deny \(incoming\)'"
 
-# ------------------------------------------------------------------------------
-# 7. SSH and Privilege Escalation
-# ------------------------------------------------------------------------------
+printf "\n%s\n\n" "7. SSH and Privilege Escalation"
 run_check 67 "JR4.C.5.1.1" \
     "[ \"\$(stat -c '%U:%G' /etc/ssh/sshd_config 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/ssh/sshd_config 2>/dev/null))) -le 384 ]"
 
@@ -288,9 +274,7 @@ run_check 83 "JR4.C.5.2.5" \
 run_check 84 "JR4.C.5.2.6" \
     "grep -Eq '^\\s*auth\\s+required\\s+pam_wheel.so.*use_uid' /etc/pam.d/su 2>/dev/null"
 
-# ------------------------------------------------------------------------------
-# 8. PAM and Password Policy
-# ------------------------------------------------------------------------------
+printf "\n%s\n\n" "8. PAM and Password Policy"
 run_check 85 "JR4.C.5.3.1.3" \
     "dpkg -s libpam-pwquality >/dev/null 2>&1"
 
@@ -363,9 +347,7 @@ run_check 107 "JR4.C.5.4.3.1" \
 run_check 108 "JR4.C.5.4.3.2" \
     "files=(/etc/profile /etc/profile.d/*.sh /etc/bash.bashrc /etc/login.defs); [ \${#files[@]} -gt 0 ] && grep -REq '^\\s*umask\\s+(027|077)\\b|^\\s*UMASK\\s+(027|077)\\b' \"\${files[@]}\""
 
-# ------------------------------------------------------------------------------
-# 9. Logging and Integrity
-# ------------------------------------------------------------------------------
+printf "\n%s\n\n" "9. Logging and Integrity"
 run_check 109 "JR4.C.6.1.2.1.1" \
     "dpkg -s systemd-journal-remote >/dev/null 2>&1"
 
