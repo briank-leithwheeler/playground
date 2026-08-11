@@ -5,7 +5,7 @@ run_check() {
     local code_ref="$2"
     local cmd="$3"
 
-    bash -c "set -o pipefail; $cmd" > /dev/null 2>&1
+    bash -c "set -o pipefail; shopt -s nullglob; $cmd" > /dev/null 2>&1
     local code=$?
 
     if [ $code -eq 0 ]; then
@@ -103,7 +103,7 @@ run_check 26 "JR4.C.1.2.1.3" \
     "command -v aa-status >/dev/null 2>&1 && ! aa-status 2>/dev/null | grep -q 'profiles are in complain mode' && ! aa-status 2>/dev/null | grep -q 'processes are unconfined but have a profile defined'"
 
 run_check 27 "JR4.C.1.3.1" \
-    "grep -REq '(^\s*set\s+superusers=|^\s*password_pbkdf2\s+)' /boot/grub/grub.cfg /boot/grub2/grub.cfg /boot/grub/user.cfg /boot/grub2/user.cfg 2>/dev/null"
+    "files=(/boot/grub/grub.cfg /boot/grub2/grub.cfg /boot/grub/user.cfg /boot/grub2/user.cfg); [ \${#files[@]} -gt 0 ] && grep -REq '(^\\s*set\\s+superusers=|^\\s*password_pbkdf2\\s+)' \"\${files[@]}\""
 
 run_check 28 "JR4.C.1.3.2" \
     "cfg=\$(ls /boot/grub/grub.cfg /boot/grub2/grub.cfg 2>/dev/null | head -n1); [ -n \"\$cfg\" ] && [ \"\$(stat -c '%U:%G' \"\$cfg\")\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' \"\$cfg\"))) -le 384 ]"
@@ -277,13 +277,13 @@ run_check 80 "JR4.C.5.1.9" \
     "sshd -T 2>/dev/null | grep -Eq '^ignorerhosts\\s+yes$'"
 
 run_check 81 "JR4.C.5.2.3" \
-    "grep -RIEq '^\\s*Defaults\\s+.*logfile=' /etc/sudoers /etc/sudoers.d 2>/dev/null"
+    "files=(/etc/sudoers /etc/sudoers.d/*); [ \${#files[@]} -gt 0 ] && grep -RIEq '^\\s*Defaults\\s+.*logfile=' \"\${files[@]}\""
 
 run_check 82 "JR4.C.5.2.4" \
-    "! grep -RIEq '^\\s*Defaults\\s+.*!authenticate' /etc/sudoers /etc/sudoers.d 2>/dev/null"
+    "files=(/etc/sudoers /etc/sudoers.d/*); [ \${#files[@]} -eq 0 ] || ! grep -RIEq '^\\s*Defaults\\s+.*!authenticate' \"\${files[@]}\""
 
 run_check 83 "JR4.C.5.2.5" \
-    "grep -RIEh '^\\s*Defaults\\s+.*timestamp_timeout=' /etc/sudoers /etc/sudoers.d 2>/dev/null | tail -n1 | awk -F= '{gsub(/[^0-9-]/,\"\",\$2); exit !(\$2>=0 && \$2<=15)}'"
+    "files=(/etc/sudoers /etc/sudoers.d/*); [ \${#files[@]} -gt 0 ] && grep -RIEh '^\\s*Defaults\\s+.*timestamp_timeout=' \"\${files[@]}\" | tail -n1 | awk -F= '{gsub(/[^0-9-]/,\"\",\$2); exit !(\$2>=0 && \$2<=15)}'"
 
 run_check 84 "JR4.C.5.2.6" \
     "grep -Eq '^\\s*auth\\s+required\\s+pam_wheel.so.*use_uid' /etc/pam.d/su 2>/dev/null"
@@ -304,37 +304,37 @@ run_check 88 "JR4.C.5.3.2.4" \
     "grep -Eq '^\\s*password\\s+.*pam_pwhistory.so' /etc/pam.d/common-password 2>/dev/null"
 
 run_check 89 "JR4.C.5.3.3.1.1" \
-    "grep -REh 'deny\s*=\s*[0-9]+' /etc/security/faillock.conf /etc/security/faillock.conf.d/*.conf /etc/pam.d/common-auth 2>/dev/null | tail -n1 | awk -F= '{gsub(/[^0-9]/,\"\",\$2); exit !(\$2>0 && \$2<=5)}'"
+    "files=(/etc/security/faillock.conf /etc/security/faillock.conf.d/*.conf /etc/pam.d/common-auth); [ \${#files[@]} -gt 0 ] && grep -REh 'deny\\s*=\\s*[0-9]+' \"\${files[@]}\" | tail -n1 | awk -F= '{gsub(/[^0-9]/,\"\",\$2); exit !(\$2>0 && \$2<=5)}'"
 
 run_check 90 "JR4.C.5.3.3.1.2" \
-    "grep -REq 'unlock_time\s*=\s*[0-9]+' /etc/security/faillock.conf /etc/security/faillock.conf.d/*.conf /etc/pam.d/common-auth 2>/dev/null"
+    "files=(/etc/security/faillock.conf /etc/security/faillock.conf.d/*.conf /etc/pam.d/common-auth); [ \${#files[@]} -gt 0 ] && grep -REq 'unlock_time\\s*=\\s*[0-9]+' \"\${files[@]}\""
 
 run_check 91 "JR4.C.5.3.3.2.1" \
-    "grep -REq '^\\s*difok\\s*=\\s*[2-9][0-9]*' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null"
+    "files=(/etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -REq '^\\s*difok\\s*=\\s*[2-9][0-9]*' \"\${files[@]}\""
 
 run_check 92 "JR4.C.5.3.3.2.2" \
-    "grep -REh '^\\s*minlen\\s*=\\s*[0-9]+' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null | tail -n1 | awk -F= '{gsub(/[^0-9]/,\"\",\$2); exit !(\$2>=14)}'"
+    "files=(/etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -REh '^\\s*minlen\\s*=\\s*[0-9]+' \"\${files[@]}\" | tail -n1 | awk -F= '{gsub(/[^0-9]/,\"\",\$2); exit !(\$2>=14)}'"
 
 run_check 93 "JR4.C.5.3.3.2.3" \
-    "grep -REq '^\\s*maxrepeat\\s*=\\s*[0-9]+' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null"
+    "files=(/etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -REq '^\\s*maxrepeat\\s*=\\s*[0-9]+' \"\${files[@]}\""
 
 run_check 94 "JR4.C.5.3.3.2.4" \
-    "grep -REq '^\\s*maxsequence\\s*=\\s*[0-9]+' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null"
+    "files=(/etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -REq '^\\s*maxsequence\\s*=\\s*[0-9]+' \"\${files[@]}\""
 
 run_check 95 "JR4.C.5.3.3.2.5" \
-    "! grep -REq '^\\s*dictcheck\\s*=\\s*0\\b' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null"
+    "files=(/etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf); [ \${#files[@]} -eq 0 ] || ! grep -REq '^\\s*dictcheck\\s*=\\s*0\\b' \"\${files[@]}\""
 
 run_check 96 "JR4.C.5.3.3.2.6" \
-    "! grep -REq '^\\s*enforcing\\s*=\\s*0\\b' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null"
+    "files=(/etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf); [ \${#files[@]} -eq 0 ] || ! grep -REq '^\\s*enforcing\\s*=\\s*0\\b' \"\${files[@]}\""
 
 run_check 97 "JR4.C.5.3.3.2.7" \
-    "grep -REq '^\\s*enforce_for_root\\b' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf /etc/pam.d/common-password 2>/dev/null"
+    "files=(/etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf /etc/pam.d/common-password); [ \${#files[@]} -gt 0 ] && grep -REq '^\\s*enforce_for_root\\b' \"\${files[@]}\""
 
 run_check 98 "JR4.C.5.3.3.3.1" \
-    "grep -REh 'remember\s*=\s*[0-9]+' /etc/security/pwhistory.conf /etc/security/pwhistory.conf.d/*.conf /etc/pam.d/common-password 2>/dev/null | tail -n1 | awk -F= '{gsub(/[^0-9]/,\"\",\$2); exit !(\$2>=24)}'"
+    "files=(/etc/security/pwhistory.conf /etc/security/pwhistory.conf.d/*.conf /etc/pam.d/common-password); [ \${#files[@]} -gt 0 ] && grep -REh 'remember\\s*=\\s*[0-9]+' \"\${files[@]}\" | tail -n1 | awk -F= '{gsub(/[^0-9]/,\"\",\$2); exit !(\$2>=24)}'"
 
 run_check 99 "JR4.C.5.3.3.3.2" \
-    "grep -REq '^\\s*enforce_for_root\\b' /etc/security/pwhistory.conf /etc/security/pwhistory.conf.d/*.conf /etc/pam.d/common-password 2>/dev/null"
+    "files=(/etc/security/pwhistory.conf /etc/security/pwhistory.conf.d/*.conf /etc/pam.d/common-password); [ \${#files[@]} -gt 0 ] && grep -REq '^\\s*enforce_for_root\\b' \"\${files[@]}\""
 
 run_check 100 "JR4.C.5.3.3.3.3" \
     "grep -Eq '^\\s*password\\s+.*pam_pwhistory.so.*use_authtok' /etc/pam.d/common-password 2>/dev/null"
@@ -355,13 +355,13 @@ run_check 105 "JR4.C.5.4.1.4" \
     "useradd -D 2>/dev/null | awk -F= '/^INACTIVE=/ {exit !(\$2>=0 && \$2<=45)} END {if (NR==0) exit 1}'"
 
 run_check 106 "JR4.C.5.4.2.6" \
-    "grep -REq '^\\s*umask\\s+(027|077)\\b|^\\s*UMASK\\s+(027|077)\\b' /root/.bash_profile /root/.profile /etc/profile /etc/bash.bashrc /etc/login.defs 2>/dev/null"
+    "files=(/root/.bash_profile /root/.profile /etc/profile /etc/bash.bashrc /etc/login.defs); [ \${#files[@]} -gt 0 ] && grep -REq '^\\s*umask\\s+(027|077)\\b|^\\s*UMASK\\s+(027|077)\\b' \"\${files[@]}\""
 
 run_check 107 "JR4.C.5.4.3.1" \
     "grep -REq '^\\s*TMOUT\\s*=\\s*[1-9][0-9]{0,2}\\b|^\\s*typeset\\s+-xr\\s+TMOUT\\s*=\\s*[1-9][0-9]{0,2}\\b' /etc/profile /etc/profile.d/*.sh /etc/bash.bashrc 2>/dev/null"
 
 run_check 108 "JR4.C.5.4.3.2" \
-    "grep -REq '^\\s*umask\\s+(027|077)\\b|^\\s*UMASK\\s+(027|077)\\b' /etc/profile /etc/profile.d/*.sh /etc/bash.bashrc /etc/login.defs 2>/dev/null"
+    "files=(/etc/profile /etc/profile.d/*.sh /etc/bash.bashrc /etc/login.defs); [ \${#files[@]} -gt 0 ] && grep -REq '^\\s*umask\\s+(027|077)\\b|^\\s*UMASK\\s+(027|077)\\b' \"\${files[@]}\""
 
 # ------------------------------------------------------------------------------
 # 9. Logging and Integrity
@@ -376,13 +376,13 @@ run_check 111 "JR4.C.6.1.2.1.3" \
     "! systemctl is-enabled systemd-journal-remote 2>/dev/null | grep -q enabled && ! systemctl is-active systemd-journal-remote 2>/dev/null | grep -q active"
 
 run_check 112 "JR4.C.6.1.2.2" \
-    "grep -REq '^\\s*Compress\\s*=\\s*yes\\b' /etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf 2>/dev/null"
+    "files=(/etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -REq '^\\s*Compress\\s*=\\s*yes\\b' \"\${files[@]}\""
 
 run_check 113 "JR4.C.6.1.2.3" \
-    "grep -REq '^\\s*Storage\\s*=\\s*persistent\\b' /etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf 2>/dev/null"
+    "files=(/etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -REq '^\\s*Storage\\s*=\\s*persistent\\b' \"\${files[@]}\""
 
 run_check 114 "JR4.C.6.1.3.3" \
-    "grep -REq '^\\s*ForwardToSyslog\\s*=\\s*yes\\b' /etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf 2>/dev/null"
+    "files=(/etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf); [ \${#files[@]} -gt 0 ] && grep -REq '^\\s*ForwardToSyslog\\s*=\\s*yes\\b' \"\${files[@]}\""
 
 run_check 115 "JR4.C.6.1.4.1" \
     "! find /var/log -type f -perm /002 -print -quit 2>/dev/null | grep -q ."
