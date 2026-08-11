@@ -1,15 +1,10 @@
 #!/usr/bin/env bash
 
-# Ensure administrative binaries are in PATH
-export PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
-
-# Function to execute check and print status
 run_check() {
     local num="$1"
     local code_ref="$2"
     local cmd="$3"
 
-    # Run command in a subshell with pipefail to catch pipe errors correctly
     bash -c "set -o pipefail; $cmd" > /dev/null 2>&1
     local code=$?
 
@@ -20,401 +15,382 @@ run_check() {
     fi
 }
 
-echo "=== Starting Security Compliance Verification ==="
-echo ""
-
 # ------------------------------------------------------------------------------
 # 1. Filesystem Kernel Modules
 # ------------------------------------------------------------------------------
-run_check 1 "JR1.A.1.1" \
+run_check 1 "JR4.C.1.1.1.1" \
     "modprobe -n -v cramfs 2>&1 | grep -E -q 'install /bin/(true|false)' && ! lsmod | grep -q cramfs"
 
-run_check 2 "JR1.A.1.2" \
+run_check 2 "JR4.C.1.1.1.2" \
     "modprobe -n -v freevxfs 2>&1 | grep -E -q 'install /bin/(true|false)' && ! lsmod | grep -q freevxfs"
 
-run_check 3 "JR1.A.1.3" \
+run_check 3 "JR4.C.1.1.1.3" \
     "modprobe -n -v hfs 2>&1 | grep -E -q 'install /bin/(true|false)' && ! lsmod | grep -q hfs"
 
-run_check 4 "JR1.A.1.4" \
+run_check 4 "JR4.C.1.1.1.4" \
     "modprobe -n -v hfsplus 2>&1 | grep -E -q 'install /bin/(true|false)' && ! lsmod | grep -q hfsplus"
 
-run_check 5 "JR1.A.1.5" \
+run_check 5 "JR4.C.1.1.1.5" \
     "modprobe -n -v jffs2 2>&1 | grep -E -q 'install /bin/(true|false)' && ! lsmod | grep -q jffs2"
 
-run_check 6 "JR1.A.1.6" \
-    "modprobe -n -v usb-storage 2>&1 | grep -E -q 'install /bin/(true|false)' && ! lsmod | grep -q usb-storage"
+run_check 6 "JR4.C.1.1.1.6" \
+    "modprobe -n -v usb-storage 2>&1 | grep -E -q 'install /bin/(true|false)' && ! lsmod | grep -q usb_storage"
 
 # ------------------------------------------------------------------------------
-# 2. Filesystem Mount Options
+# 2. Partition and Mount Options
 # ------------------------------------------------------------------------------
-run_check 7 "JR1.A.2.1" \
-    "findmnt /tmp"
+run_check 7 "JR4.C.1.1.2.1.1" \
+    "mountpoint -q /tmp"
 
-run_check 8 "JR1.A.2.2" \
-    "findmnt -n /tmp | grep -q 'nodev'"
+run_check 8 "JR4.C.1.1.2.1.2" \
+    "! mountpoint -q /tmp || findmnt -n -o OPTIONS --target /tmp | grep -qw nodev"
 
-run_check 9 "JR1.A.2.3" \
-    "findmnt -n /tmp | grep -q 'nosuid'"
+run_check 9 "JR4.C.1.1.2.1.3" \
+    "! mountpoint -q /tmp || findmnt -n -o OPTIONS --target /tmp | grep -qw nosuid"
 
-run_check 10 "JR1.A.2.4" \
-    "findmnt -n /tmp | grep -q 'noexec'"
+run_check 10 "JR4.C.1.1.2.1.4" \
+    "! mountpoint -q /tmp || findmnt -n -o OPTIONS --target /tmp | grep -qw noexec"
 
-run_check 11 "JR1.A.3.1" \
-    "findmnt -n /dev/shm | grep -q 'noexec'"
+run_check 11 "JR4.C.1.1.2.2.4" \
+    "! mountpoint -q /dev/shm || findmnt -n -o OPTIONS --target /dev/shm | grep -qw noexec"
 
-run_check 12 "JR1.A.4.1" \
-    "findmnt -n /home | grep -q 'nodev'"
+run_check 12 "JR4.C.1.1.2.3.1" \
+    "! mountpoint -q /home || findmnt -n -o OPTIONS --target /home | grep -qw nodev"
 
-run_check 13 "JR1.A.4.2" \
-    "findmnt -n /home | grep -q 'nosuid'"
+run_check 13 "JR4.C.1.1.2.3.2" \
+    "! mountpoint -q /home || findmnt -n -o OPTIONS --target /home | grep -qw nosuid"
 
-run_check 14 "JR1.A.5.1" \
-    "findmnt -n /var | grep -q 'nodev'"
+run_check 14 "JR4.C.1.1.2.4.1" \
+    "! mountpoint -q /var || findmnt -n -o OPTIONS --target /var | grep -qw nodev"
 
-run_check 15 "JR1.A.5.2" \
-    "findmnt -n /var | grep -q 'nosuid'"
+run_check 15 "JR4.C.1.1.2.4.2" \
+    "! mountpoint -q /var || findmnt -n -o OPTIONS --target /var | grep -qw nosuid"
 
-run_check 16 "JR1.A.6.1" \
-    "findmnt -n /var/tmp | grep -q 'nodev'"
+run_check 16 "JR4.C.1.1.2.5.1" \
+    "! mountpoint -q /var/tmp || findmnt -n -o OPTIONS --target /var/tmp | grep -qw nodev"
 
-run_check 17 "JR1.A.6.2" \
-    "findmnt -n /var/tmp | grep -q 'nosuid'"
+run_check 17 "JR4.C.1.1.2.5.2" \
+    "! mountpoint -q /var/tmp || findmnt -n -o OPTIONS --target /var/tmp | grep -qw nosuid"
 
-run_check 18 "JR1.A.6.3" \
-    "findmnt -n /var/tmp | grep -q 'noexec'"
+run_check 18 "JR4.C.1.1.2.5.3" \
+    "! mountpoint -q /var/tmp || findmnt -n -o OPTIONS --target /var/tmp | grep -qw noexec"
 
-run_check 19 "JR1.A.7.1" \
-    "findmnt -n /var/log | grep -q 'nodev'"
+run_check 19 "JR4.C.1.1.2.6.1" \
+    "! mountpoint -q /var/log || findmnt -n -o OPTIONS --target /var/log | grep -qw nodev"
 
-run_check 20 "JR1.A.7.2" \
-    "findmnt -n /var/log | grep -q 'nosuid'"
+run_check 20 "JR4.C.1.1.2.6.2" \
+    "! mountpoint -q /var/log || findmnt -n -o OPTIONS --target /var/log | grep -qw nosuid"
 
-run_check 21 "JR1.A.7.3" \
-    "findmnt -n /var/log | grep -q 'noexec'"
+run_check 21 "JR4.C.1.1.2.6.3" \
+    "! mountpoint -q /var/log || findmnt -n -o OPTIONS --target /var/log | grep -qw noexec"
 
-run_check 22 "JR1.A.8.1" \
-    "findmnt -n /var/log/audit | grep -q 'nodev'"
+run_check 22 "JR4.C.1.1.2.7.1" \
+    "! mountpoint -q /var/log/audit || findmnt -n -o OPTIONS --target /var/log/audit | grep -qw nodev"
 
-run_check 23 "JR1.A.8.2" \
-    "findmnt -n /var/log/audit | grep -q 'nosuid'"
+run_check 23 "JR4.C.1.1.2.7.2" \
+    "! mountpoint -q /var/log/audit || findmnt -n -o OPTIONS --target /var/log/audit | grep -qw nosuid"
 
-run_check 24 "JR1.A.8.3" \
-    "findmnt -n /var/log/audit | grep -q 'noexec'"
+run_check 24 "JR4.C.1.1.2.7.3" \
+    "! mountpoint -q /var/log/audit || findmnt -n -o OPTIONS --target /var/log/audit | grep -qw noexec"
 
-# # ------------------------------------------------------------------------------
-# # 3. AppArmor Configuration
-# # ------------------------------------------------------------------------------
-# run_check 25 "JR1.B.1.1" \
-#     "true"
+# ------------------------------------------------------------------------------
+# 3. AppArmor, Bootloader, and Process Hardening
+# ------------------------------------------------------------------------------
+run_check 25 "JR4.C.1.2.1.2" \
+    "cat /sys/module/apparmor/parameters/enabled 2>/dev/null | grep -q '^Y$'"
 
-# run_check 26 "JR1.B.1.2" \
-#     "true"
+run_check 26 "JR4.C.1.2.1.3" \
+    "command -v aa-status >/dev/null 2>&1 && ! aa-status 2>/dev/null | grep -q 'profiles are in complain mode' && ! aa-status 2>/dev/null | grep -q 'processes are unconfined but have a profile defined'"
 
-# # ------------------------------------------------------------------------------
-# # 4. Bootloader Configuration
-# # ------------------------------------------------------------------------------
-# run_check 27 "JR1.C.1.1" \
-#     "true"
+run_check 27 "JR4.C.1.3.1" \
+    "grep -REq '(^\s*set\s+superusers=|^\s*password_pbkdf2\s+)' /boot/grub/grub.cfg /boot/grub2/grub.cfg /boot/grub/user.cfg /boot/grub2/user.cfg 2>/dev/null"
 
-# run_check 28 "JR1.C.1.2" \
-#     "[ \$(stat -c '%a %U %G' /boot/grub/grub.cfg 2>/dev/null) = '600 root root' ]"
+run_check 28 "JR4.C.1.3.2" \
+    "cfg=\$(ls /boot/grub/grub.cfg /boot/grub2/grub.cfg 2>/dev/null | head -n1); [ -n \"\$cfg\" ] && [ \"\$(stat -c '%U:%G' \"\$cfg\")\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' \"\$cfg\"))) -le 384 ]"
 
-# # ------------------------------------------------------------------------------
-# # 5. Process Hardening
-# # ------------------------------------------------------------------------------
-# run_check 29 "JR1.D.1.1" \
-#     "[ \$(sysctl -n kernel.randomize_va_space) -eq 2 ]"
+run_check 29 "JR4.C.1.4.1" \
+    "sysctl -n kernel.randomize_va_space 2>/dev/null | grep -qx '2'"
 
-# run_check 30 "JR1.D.1.2" \
-#     "[ \$(sysctl -n kernel.yama.ptrace_scope) -ge 1 ]"
+run_check 30 "JR4.C.1.4.2" \
+    "sysctl -n kernel.yama.ptrace_scope 2>/dev/null | grep -qx '1'"
 
-# run_check 31 "JR1.D.1.3" \
-#     "grep -E -q '^\*\s+hard\s+core\s+0' /etc/security/limits.conf /etc/security/limits.d/*"
+run_check 31 "JR4.C.1.4.3" \
+    "sysctl -n fs.suid_dumpable 2>/dev/null | grep -qx '0' && grep -REq '^\*\s+hard\s+core\s+0\b' /etc/security/limits.conf /etc/security/limits.d/*.conf 2>/dev/null"
 
-# run_check 32 "JR1.D.1.4" \
-#     "! command -v prelink"
+run_check 32 "JR4.C.1.4.4" \
+    "! dpkg -s prelink >/dev/null 2>&1"
 
-# run_check 33 "JR1.D.1.5" \
-#     "! systemctl is-active --quiet apport"
+run_check 33 "JR4.C.1.4.5" \
+    "! grep -Eiq '^\s*enabled\s*=\s*1\b' /etc/default/apport 2>/dev/null"
 
-# # ------------------------------------------------------------------------------
-# # 6. Warning Banners
-# # ------------------------------------------------------------------------------
-# run_check 34 "JR1.E.1.1" \
-#     "[ -s /etc/motd ]"
+# ------------------------------------------------------------------------------
+# 4. Banners and Access Controls
+# ------------------------------------------------------------------------------
+run_check 34 "JR4.C.1.5.1" \
+    "! grep -Eqs '(\\v|\\r|\\m|\\s)' /etc/motd 2>/dev/null"
 
-# run_check 35 "JR1.E.1.2" \
-#     "[ -s /etc/issue ]"
+run_check 35 "JR4.C.1.5.2" \
+    "! grep -Eqs '(\\v|\\r|\\m|\\s)' /etc/issue 2>/dev/null"
 
-# run_check 36 "JR1.E.1.3" \
-#     "[ -s /etc/issue.net ]"
+run_check 36 "JR4.C.1.5.3" \
+    "! grep -Eqs '(\\v|\\r|\\m|\\s)' /etc/issue.net 2>/dev/null"
 
-# run_check 37 "JR1.E.1.4" \
-#     "[ \$(stat -c '%a %U %G' /etc/motd 2>/dev/null) = '644 root root' ]"
+run_check 37 "JR4.C.1.5.4" \
+    "[ \"\$(stat -c '%U:%G' /etc/motd 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/motd 2>/dev/null))) -le 420 ]"
 
-# run_check 38 "JR1.E.1.5" \
-#     "[ \$(stat -c '%a %U %G' /etc/issue 2>/dev/null) = '644 root root' ]"
+run_check 38 "JR4.C.1.5.5" \
+    "[ \"\$(stat -c '%U:%G' /etc/issue 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/issue 2>/dev/null))) -le 420 ]"
 
-# run_check 39 "JR1.E.1.6" \
-#     "[ \$(stat -c '%a %U %G' /etc/issue.net 2>/dev/null) = '644 root root' ]"
+run_check 39 "JR4.C.1.5.6" \
+    "[ \"\$(stat -c '%U:%G' /etc/issue.net 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/issue.net 2>/dev/null))) -le 420 ]"
 
-# # ------------------------------------------------------------------------------
-# # 7. Services (Server & Client)
-# # ------------------------------------------------------------------------------
-# run_check 40 "JR2.A.1.1" \
-#     "! systemctl is-enabled --quiet rsync 2>/dev/null"
+run_check 40 "JR4.C.2.1.13" \
+    "! systemctl is-enabled rsync 2>/dev/null | grep -q enabled && ! systemctl is-active rsync 2>/dev/null | grep -q active && ! ss -lntu 2>/dev/null | grep -q ':873\\b'"
 
-# run_check 41 "JR2.A.2.1" \
-#     "true"
+run_check 41 "JR4.C.2.1.18" \
+    "! systemctl is-enabled apache2 2>/dev/null | grep -q enabled && ! systemctl is-active apache2 2>/dev/null | grep -q active && ! systemctl is-enabled nginx 2>/dev/null | grep -q enabled && ! systemctl is-active nginx 2>/dev/null | grep -q active && ! ss -lntu 2>/dev/null | grep -Eq ':(80|443)\\b'"
 
-# run_check 42 "JR2.B.1.1" \
-#     "true"
+run_check 42 "JR4.C.2.2.4" \
+    "! dpkg -s telnet >/dev/null 2>&1"
 
-# run_check 43 "JR2.B.1.2" \
-#     "! command -v ftp"
+run_check 43 "JR4.C.2.2.6" \
+    "! dpkg -s ftp >/dev/null 2>&1"
 
-# # ------------------------------------------------------------------------------
-# # 8. Cron & At Configuration
-# # ------------------------------------------------------------------------------
-# run_check 44 "JR2.C.1.1" \
-#     "[ \$(stat -c '%a %U %G' /etc/crontab 2>/dev/null) = '600 root root' ]"
+# ------------------------------------------------------------------------------
+# 5. Scheduled Tasks and Permissions
+# ------------------------------------------------------------------------------
+run_check 44 "JR4.C.2.4.1.2" \
+    "[ \"\$(stat -c '%U:%G' /etc/crontab 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/crontab 2>/dev/null))) -le 384 ]"
 
-# run_check 45 "JR2.C.1.2" \
-#     "[ \$(stat -c '%a %U %G' /etc/cron.hourly 2>/dev/null) = '700 root root' ]"
+run_check 45 "JR4.C.2.4.1.3" \
+    "[ \"\$(stat -c '%U:%G' /etc/cron.hourly 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/cron.hourly 2>/dev/null))) -le 448 ]"
 
-# run_check 46 "JR2.C.1.3" \
-#     "[ \$(stat -c '%a %U %G' /etc/cron.daily 2>/dev/null) = '700 root root' ]"
+run_check 46 "JR4.C.2.4.1.4" \
+    "[ \"\$(stat -c '%U:%G' /etc/cron.daily 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/cron.daily 2>/dev/null))) -le 448 ]"
 
-# run_check 47 "JR2.C.1.4" \
-#     "[ \$(stat -c '%a %U %G' /etc/cron.weekly 2>/dev/null) = '700 root root' ]"
+run_check 47 "JR4.C.2.4.1.5" \
+    "[ \"\$(stat -c '%U:%G' /etc/cron.weekly 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/cron.weekly 2>/dev/null))) -le 448 ]"
 
-# run_check 48 "JR2.C.1.5" \
-#     "[ \$(stat -c '%a %U %G' /etc/cron.monthly 2>/dev/null) = '700 root root' ]"
+run_check 48 "JR4.C.2.4.1.6" \
+    "[ \"\$(stat -c '%U:%G' /etc/cron.monthly 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/cron.monthly 2>/dev/null))) -le 448 ]"
 
-# run_check 49 "JR2.C.1.6" \
-#     "[ \$(stat -c '%a %U %G' /etc/cron.d 2>/dev/null) = '700 root root' ]"
+run_check 49 "JR4.C.2.4.1.7" \
+    "[ \"\$(stat -c '%U:%G' /etc/cron.d 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/cron.d 2>/dev/null))) -le 448 ]"
 
-# run_check 50 "JR2.C.1.7" \
-#     "[ -f /etc/cron.allow ] && [ \$(stat -c '%a' /etc/cron.allow) = '640' ]"
+run_check 50 "JR4.C.2.4.1.8" \
+    "[ -f /etc/cron.allow ] && [ ! -f /etc/cron.deny ] && [ \"\$(stat -c '%U:%G' /etc/cron.allow 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/cron.allow 2>/dev/null))) -le 416 ]"
 
-# run_check 51 "JR2.C.2.1" \
-#     "[ -f /etc/at.allow ] && [ \$(stat -c '%a' /etc/at.allow) = '640' ]"
+run_check 51 "JR4.C.2.4.2.1" \
+    "[ -f /etc/at.allow ] && [ ! -f /etc/at.deny ] && [ \"\$(stat -c '%U:%G' /etc/at.allow 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/at.allow 2>/dev/null))) -le 416 ]"
 
-# # ------------------------------------------------------------------------------
-# # 9. Network Hardening & Sysctl Parameters
-# # ------------------------------------------------------------------------------
-# run_check 52 "JR3.A.1.1" \
-#     "nmcli radio wifi 2>/dev/null | grep -q 'disabled' || [ \$(nmcli device 2>/dev/null | grep -c 'wifi') -eq 0 ]"
+# ------------------------------------------------------------------------------
+# 6. Network Configuration
+# ------------------------------------------------------------------------------
+run_check 52 "JR4.C.3.1.1" \
+    "[ -z \"\$(find /sys/class/net -mindepth 2 -maxdepth 2 -name wireless 2>/dev/null)\" ]"
 
-# run_check 53 "JR3.A.1.2" \
-#     "! systemctl is-active --quiet bluetooth"
+run_check 53 "JR4.C.3.1.2" \
+    "! systemctl is-enabled bluetooth 2>/dev/null | grep -q enabled && ! systemctl is-active bluetooth 2>/dev/null | grep -q active"
 
-# run_check 54 "JR3.B.1.1" \
-#     "[ \$(sysctl -n net.ipv4.ip_forward) -eq 0 ]"
+run_check 54 "JR4.C.3.2.1" \
+    "sysctl -n net.ipv4.ip_forward 2>/dev/null | grep -qx '0' && (sysctl -n net.ipv6.conf.all.forwarding 2>/dev/null | grep -qx '0' || true)"
 
-# run_check 55 "JR3.B.1.2" \
-#     "[ \$(sysctl -n net.ipv4.tcp_syncookies) -eq 1 ]"
+run_check 55 "JR4.C.3.2.10" \
+    "sysctl -n net.ipv4.tcp_syncookies 2>/dev/null | grep -qx '1'"
 
-# run_check 56 "JR3.B.1.3" \
-#     "[ \$(sysctl -n net.ipv6.conf.all.accept_ra) -eq 0 ]"
+run_check 56 "JR4.C.3.2.11" \
+    "sysctl -n net.ipv6.conf.all.accept_ra 2>/dev/null | grep -qx '0' && sysctl -n net.ipv6.conf.default.accept_ra 2>/dev/null | grep -qx '0'"
 
-# run_check 57 "JR3.B.1.4" \
-#     "[ \$(sysctl -n net.ipv4.conf.all.send_redirects) -eq 0 ]"
+run_check 57 "JR4.C.3.2.2" \
+    "sysctl -n net.ipv4.conf.all.send_redirects 2>/dev/null | grep -qx '0' && sysctl -n net.ipv4.conf.default.send_redirects 2>/dev/null | grep -qx '0'"
 
-# run_check 58 "JR3.B.1.5" \
-#     "[ \$(sysctl -n net.ipv4.icmp_ignore_bogus_error_responses) -eq 1 ]"
+run_check 58 "JR4.C.3.2.3" \
+    "sysctl -n net.ipv4.icmp_ignore_bogus_error_responses 2>/dev/null | grep -qx '1'"
 
-# run_check 59 "JR3.B.1.6" \
-#     "[ \$(sysctl -n net.ipv4.icmp_echo_ignore_broadcasts) -eq 1 ]"
+run_check 59 "JR4.C.3.2.4" \
+    "sysctl -n net.ipv4.icmp_echo_ignore_broadcasts 2>/dev/null | grep -qx '1'"
 
-# run_check 60 "JR3.B.1.7" \
-#     "[ \$(sysctl -n net.ipv4.conf.all.accept_redirects) -eq 0 ]"
+run_check 60 "JR4.C.3.2.5" \
+    "sysctl -n net.ipv4.conf.all.accept_redirects 2>/dev/null | grep -qx '0' && sysctl -n net.ipv4.conf.default.accept_redirects 2>/dev/null | grep -qx '0'"
 
-# run_check 61 "JR3.B.1.8" \
-#     "[ \$(sysctl -n net.ipv4.conf.all.secure_redirects) -eq 0 ]"
+run_check 61 "JR4.C.3.2.6" \
+    "sysctl -n net.ipv4.conf.all.secure_redirects 2>/dev/null | grep -qx '0' && sysctl -n net.ipv4.conf.default.secure_redirects 2>/dev/null | grep -qx '0'"
 
-# run_check 62 "JR3.B.1.9" \
-#     "[ \$(sysctl -n net.ipv4.conf.all.rp_filter) -eq 1 ]"
+run_check 62 "JR4.C.3.2.7" \
+    "sysctl -n net.ipv4.conf.all.rp_filter 2>/dev/null | grep -Eq '^[12]$' && sysctl -n net.ipv4.conf.default.rp_filter 2>/dev/null | grep -Eq '^[12]$'"
 
-# run_check 63 "JR3.B.1.10" \
-#     "[ \$(sysctl -n net.ipv4.conf.all.accept_source_route) -eq 0 ]"
+run_check 63 "JR4.C.3.2.8" \
+    "sysctl -n net.ipv4.conf.all.accept_source_route 2>/dev/null | grep -qx '0' && sysctl -n net.ipv4.conf.default.accept_source_route 2>/dev/null | grep -qx '0' && sysctl -n net.ipv6.conf.all.accept_source_route 2>/dev/null | grep -qx '0' && sysctl -n net.ipv6.conf.default.accept_source_route 2>/dev/null | grep -qx '0'"
 
-# run_check 64 "JR3.B.1.11" \
-#     "[ \$(sysctl -n net.ipv4.conf.all.log_martians) -eq 1 ]"
+run_check 64 "JR4.C.3.2.9" \
+    "sysctl -n net.ipv4.conf.all.log_martians 2>/dev/null | grep -qx '1' && sysctl -n net.ipv4.conf.default.log_martians 2>/dev/null | grep -qx '1'"
 
-# # ------------------------------------------------------------------------------
-# # 10. Firewall Configuration
-# # ------------------------------------------------------------------------------
-# run_check 65 "JR3.C.1.1" \
-#     "true"
+run_check 65 "JR4.C.4.2.5" \
+    "ufw status 2>/dev/null | grep -q 'Status: active' && ufw status numbered 2>/dev/null | grep -q '^\\['"
 
-# run_check 66 "JR3.C.1.2" \
-#     "true"
+run_check 66 "JR4.C.4.2.6" \
+    "ufw status verbose 2>/dev/null | grep -Eq 'Default:\s+deny \(incoming\)'"
 
-# # ------------------------------------------------------------------------------
-# # 11. SSH Server Configuration
-# # ------------------------------------------------------------------------------
-# run_check 67 "JR3.D.1.1" \
-#     "[ \$(stat -c '%a %U %G' /etc/ssh/sshd_config 2>/dev/null) = '600 root root' ]"
+# ------------------------------------------------------------------------------
+# 7. SSH and Privilege Escalation
+# ------------------------------------------------------------------------------
+run_check 67 "JR4.C.5.1.1" \
+    "[ \"\$(stat -c '%U:%G' /etc/ssh/sshd_config 2>/dev/null)\" = 'root:root' ] && [ \$((8#\$(stat -c '%a' /etc/ssh/sshd_config 2>/dev/null))) -le 384 ]"
 
-# run_check 68 "JR3.D.1.2" \
-#     "sshd -T 2>/dev/null | grep -E -q 'logingracetime ([1-9]|[1-5][0-9]|60)'"
+run_check 68 "JR4.C.5.1.11" \
+    "sshd -T 2>/dev/null | grep -Eq '^logingracetime\\s+[1-9][0-9]*$'"
 
-# run_check 69 "JR3.D.1.3" \
-#     "sshd -T 2>/dev/null | grep -E -q 'loglevel (INFO|VERBOSE)'"
+run_check 69 "JR4.C.5.1.12" \
+    "sshd -T 2>/dev/null | grep -Eq '^loglevel\\s+(VERBOSE|INFO)$'"
 
-# run_check 70 "JR3.D.1.4" \
-#     "sshd -T 2>/dev/null | grep -E -q 'maxauthtries [1-4]'"
+run_check 70 "JR4.C.5.1.14" \
+    "sshd -T 2>/dev/null | awk '/^maxauthtries / {exit !(\$2<=4)} END {if (NR==0) exit 1}'"
 
-# run_check 71 "JR3.D.1.5" \
-#     "sshd -T 2>/dev/null | grep -E -q 'maxsessions ([1-9]|10)'"
+run_check 71 "JR4.C.5.1.15" \
+    "sshd -T 2>/dev/null | awk '/^maxsessions / {exit !(\$2<=10)} END {if (NR==0) exit 1}'"
 
-# run_check 72 "JR3.D.1.6" \
-#     "sshd -T 2>/dev/null | grep -q 'maxstartups 10:30:60'"
+run_check 72 "JR4.C.5.1.16" \
+    "sshd -T 2>/dev/null | grep -Eq '^maxstartups\\s+([0-9]+:[0-9]+:[0-9]+|[0-9]+)$'"
 
-# run_check 73 "JR3.D.1.7" \
-#     "sshd -T 2>/dev/null | grep -q 'permitrootlogin no'"
+run_check 73 "JR4.C.5.1.18" \
+    "sshd -T 2>/dev/null | grep -Eq '^permitrootlogin\\s+no$'"
 
-# run_check 74 "JR3.D.1.8" \
-#     "sshd -T 2>/dev/null | grep -q 'permituserenvironment no'"
+run_check 74 "JR4.C.5.1.19" \
+    "sshd -T 2>/dev/null | grep -Eq '^permituserenvironment\\s+no$'"
 
-# run_check 75 "JR3.D.1.9" \
-#     "sshd -T 2>/dev/null | grep -E -q '(allowusers|allowgroups|denyusers|denygroups)'"
+run_check 75 "JR4.C.5.1.4" \
+    "sshd -T 2>/dev/null | grep -Eq '^(allowusers|allowgroups|denyusers|denygroups)\\s+'"
 
-# run_check 76 "JR3.D.1.10" \
-#     "sshd -T 2>/dev/null | grep -q 'banner /etc/issue.net'"
+run_check 76 "JR4.C.5.1.5" \
+    "banner=\$(sshd -T 2>/dev/null | awk '/^banner / {print \$2}'); [ -n \"\$banner\" ] && [ \"\$banner\" != 'none' ] && [ -f \"\$banner\" ]"
 
-# run_check 77 "JR3.D.1.11" \
-#     "sshd -T 2>/dev/null | grep -q 'ciphers'"
+run_check 77 "JR4.C.5.1.6" \
+    "sshd -T 2>/dev/null | grep -Eq '^ciphers\\s+.+'"
 
-# run_check 78 "JR3.D.1.12" \
-#     "sshd -T 2>/dev/null | grep -q 'clientaliveinterval [1-9]' && sshd -T 2>/dev/null | grep -q 'clientalivecountmax [1-9]'"
+run_check 78 "JR4.C.5.1.7" \
+    "sshd -T 2>/dev/null | grep -Eq '^clientaliveinterval\\s+[1-9][0-9]*$' && sshd -T 2>/dev/null | awk '/^clientalivecountmax / {exit !(\$2<=3)} END {if (NR==0) exit 1}'"
 
-# run_check 79 "JR3.D.1.13" \
-#     "sshd -T 2>/dev/null | grep -q 'hostbasedauthentication no'"
+run_check 79 "JR4.C.5.1.8" \
+    "sshd -T 2>/dev/null | grep -Eq '^hostbasedauthentication\\s+no$'"
 
-# run_check 80 "JR3.D.1.14" \
-#     "sshd -T 2>/dev/null | grep -q 'ignorerhosts yes'"
+run_check 80 "JR4.C.5.1.9" \
+    "sshd -T 2>/dev/null | grep -Eq '^ignorerhosts\\s+yes$'"
 
-# # ------------------------------------------------------------------------------
-# # 12. Privilege Escalation & PAM Security
-# # ------------------------------------------------------------------------------
-# run_check 81 "JR4.A.1.1" \
-#     "grep -r -E -q 'logfile=' /etc/sudoers /etc/sudoers.d/"
+run_check 81 "JR4.C.5.2.3" \
+    "grep -RIEq '^\\s*Defaults\\s+.*logfile=' /etc/sudoers /etc/sudoers.d 2>/dev/null"
 
-# run_check 82 "JR4.A.1.2" \
-#     "! grep -r -E -q '!authenticate' /etc/sudoers /etc/sudoers.d/"
+run_check 82 "JR4.C.5.2.4" \
+    "! grep -RIEq '^\\s*Defaults\\s+.*!authenticate' /etc/sudoers /etc/sudoers.d 2>/dev/null"
 
-# run_check 83 "JR4.A.1.3" \
-#     "grep -r -E -q 'timestamp_timeout=([0-9]|1[0-5])\b' /etc/sudoers /etc/sudoers.d/"
+run_check 83 "JR4.C.5.2.5" \
+    "grep -RIEh '^\\s*Defaults\\s+.*timestamp_timeout=' /etc/sudoers /etc/sudoers.d 2>/dev/null | tail -n1 | awk -F= '{gsub(/[^0-9-]/,\"\",\$2); exit !(\$2>=0 && \$2<=15)}'"
 
-# run_check 84 "JR4.A.1.4" \
-#     "grep -E -q 'auth\s+required\s+pam_wheel.so' /etc/pam.d/su"
+run_check 84 "JR4.C.5.2.6" \
+    "grep -Eq '^\\s*auth\\s+required\\s+pam_wheel.so.*use_uid' /etc/pam.d/su 2>/dev/null"
 
-# run_check 85 "JR4.A.2.1" \
-#     "dpkg -s libpam-pwquality 2>/dev/null | grep -q 'Status: install ok installed'"
+# ------------------------------------------------------------------------------
+# 8. PAM and Password Policy
+# ------------------------------------------------------------------------------
+run_check 85 "JR4.C.5.3.1.3" \
+    "dpkg -s libpam-pwquality >/dev/null 2>&1"
 
-# run_check 86 "JR4.A.2.2" \
-#     "grep -E -q 'pam_faillock.so' /etc/pam.d/common-auth"
+run_check 86 "JR4.C.5.3.2.2" \
+    "grep -Eq '^\\s*auth\\s+.*pam_faillock.so' /etc/pam.d/common-auth 2>/dev/null && grep -Eq '^\\s*account\\s+.*pam_faillock.so' /etc/pam.d/common-account 2>/dev/null"
 
-# run_check 87 "JR4.A.2.3" \
-#     "grep -E -q 'pam_pwquality.so' /etc/pam.d/common-password"
+run_check 87 "JR4.C.5.3.2.3" \
+    "grep -Eq '^\\s*password\\s+.*pam_pwquality.so' /etc/pam.d/common-password 2>/dev/null"
 
-# run_check 88 "JR4.A.2.4" \
-#     "grep -E -q 'pam_pwhistory.so.*remember=24' /etc/pam.d/common-password"
+run_check 88 "JR4.C.5.3.2.4" \
+    "grep -Eq '^\\s*password\\s+.*pam_pwhistory.so' /etc/pam.d/common-password 2>/dev/null"
 
-# run_check 89 "JR4.A.3.1" \
-#     "grep -E -q 'deny\s*=\s*[1-5]\b' /etc/security/faillock.conf /etc/pam.d/common-auth"
+run_check 89 "JR4.C.5.3.3.1.1" \
+    "grep -REh 'deny\s*=\s*[0-9]+' /etc/security/faillock.conf /etc/security/faillock.conf.d/*.conf /etc/pam.d/common-auth 2>/dev/null | tail -n1 | awk -F= '{gsub(/[^0-9]/,\"\",\$2); exit !(\$2>0 && \$2<=5)}'"
 
-# run_check 90 "JR4.A.3.2" \
-#     "grep -E -q 'unlock_time\s*=\s*(0|[9][0][0]|1[0-9]{3})' /etc/security/faillock.conf /etc/pam.d/common-auth"
+run_check 90 "JR4.C.5.3.3.1.2" \
+    "grep -REq 'unlock_time\s*=\s*[0-9]+' /etc/security/faillock.conf /etc/security/faillock.conf.d/*.conf /etc/pam.d/common-auth 2>/dev/null"
 
-# run_check 91 "JR4.A.4.1" \
-#     "grep -E -q 'difok\s*=\s*([2-9]|[1-9][0-9])' /etc/security/pwquality.conf"
+run_check 91 "JR4.C.5.3.3.2.1" \
+    "grep -REq '^\\s*difok\\s*=\\s*[2-9][0-9]*' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null"
 
-# run_check 92 "JR4.A.4.2" \
-#     "grep -E -q 'minlen\s*=\s*(1[4-9]|[2-9][0-9])' /etc/security/pwquality.conf"
+run_check 92 "JR4.C.5.3.3.2.2" \
+    "grep -REh '^\\s*minlen\\s*=\\s*[0-9]+' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null | tail -n1 | awk -F= '{gsub(/[^0-9]/,\"\",\$2); exit !(\$2>=14)}'"
 
-# run_check 93 "JR4.A.4.3" \
-#     "grep -E -q 'maxrepeat\s*=\s*[1-3]' /etc/security/pwquality.conf"
+run_check 93 "JR4.C.5.3.3.2.3" \
+    "grep -REq '^\\s*maxrepeat\\s*=\\s*[0-9]+' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null"
 
-# run_check 94 "JR4.A.4.4" \
-#     "grep -E -q 'maxsequence\s*=\s*[1-3]' /etc/security/pwquality.conf"
+run_check 94 "JR4.C.5.3.3.2.4" \
+    "grep -REq '^\\s*maxsequence\\s*=\\s*[0-9]+' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null"
 
-# run_check 95 "JR4.A.4.5" \
-#     "! grep -E -q 'dictcheck\s*=\s*0' /etc/security/pwquality.conf"
+run_check 95 "JR4.C.5.3.3.2.5" \
+    "! grep -REq '^\\s*dictcheck\\s*=\\s*0\\b' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null"
 
-# run_check 96 "JR4.A.4.6" \
-#     "! grep -E -q 'enforcing\s*=\s*0' /etc/security/pwquality.conf"
+run_check 96 "JR4.C.5.3.3.2.6" \
+    "! grep -REq '^\\s*enforcing\\s*=\\s*0\\b' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf 2>/dev/null"
 
-# run_check 97 "JR4.A.4.7" \
-#     "grep -E -q 'enforce_for_root' /etc/security/pwquality.conf /etc/pam.d/common-password"
+run_check 97 "JR4.C.5.3.3.2.7" \
+    "grep -REq '^\\s*enforce_for_root\\b' /etc/security/pwquality.conf /etc/security/pwquality.conf.d/*.conf /etc/pam.d/common-password 2>/dev/null"
 
-# run_check 98 "JR4.A.5.1" \
-#     "grep -E -q 'remember\s*=\s*(2[4-9]|[3-9][0-9])' /etc/pam.d/common-password"
+run_check 98 "JR4.C.5.3.3.3.1" \
+    "grep -REh 'remember\s*=\s*[0-9]+' /etc/security/pwhistory.conf /etc/security/pwhistory.conf.d/*.conf /etc/pam.d/common-password 2>/dev/null | tail -n1 | awk -F= '{gsub(/[^0-9]/,\"\",\$2); exit !(\$2>=24)}'"
 
-# run_check 99 "JR4.A.5.2" \
-#     "grep -E -q 'pam_pwhistory.so.*enforce_for_root' /etc/pam.d/common-password"
+run_check 99 "JR4.C.5.3.3.3.2" \
+    "grep -REq '^\\s*enforce_for_root\\b' /etc/security/pwhistory.conf /etc/security/pwhistory.conf.d/*.conf /etc/pam.d/common-password 2>/dev/null"
 
-# run_check 100 "JR4.A.5.3" \
-#     "grep -E -q 'pam_pwhistory.so.*use_authtok' /etc/pam.d/common-password"
+run_check 100 "JR4.C.5.3.3.3.3" \
+    "grep -Eq '^\\s*password\\s+.*pam_pwhistory.so.*use_authtok' /etc/pam.d/common-password 2>/dev/null"
 
-# run_check 101 "JR4.A.6.1" \
-#     "! grep -R -q 'nullok' /etc/pam.d/"
+run_check 101 "JR4.C.5.3.3.4.1" \
+    "! grep -Eq '^\\s*password\\s+.*pam_unix.so.*\\bnullok\\b' /etc/pam.d/common-password 2>/dev/null"
 
-# run_check 102 "JR4.A.6.2" \
-#     "! grep -E -q 'pam_unix.so.*remember' /etc/pam.d/"
+run_check 102 "JR4.C.5.3.3.4.2" \
+    "! grep -Eq '^\\s*password\\s+.*pam_unix.so.*\\bremember\\b' /etc/pam.d/common-password 2>/dev/null"
 
-# # ------------------------------------------------------------------------------
-# # 13. User Accounts & Environment Settings
-# # ------------------------------------------------------------------------------
-# run_check 103 "JR4.B.1.1" \
-#     "[ \$(grep -E '^PASS_MAX_DAYS' /etc/login.defs | awk '{print \$2}') -le 365 ]"
+run_check 103 "JR4.C.5.4.1.1" \
+    "awk '/^PASS_MAX_DAYS/ {exit !(\$2>0 && \$2<=365)} END {if (NR==0) exit 1}' /etc/login.defs 2>/dev/null"
 
-# run_check 104 "JR4.B.1.2" \
-#     "[ \$(grep -E '^PASS_WARN_AGE' /etc/login.defs | awk '{print \$2}') -ge 7 ]"
+run_check 104 "JR4.C.5.4.1.2" \
+    "awk '/^PASS_WARN_AGE/ {exit !(\$2>=7)} END {if (NR==0) exit 1}' /etc/login.defs 2>/dev/null"
 
-# run_check 105 "JR4.B.1.3" \
-#     "[ \$(useradd -D | grep INACTIVE | cut -d= -f2) -le 45 ]"
+run_check 105 "JR4.C.5.4.1.4" \
+    "useradd -D 2>/dev/null | awk -F= '/^INACTIVE=/ {exit !(\$2>=0 && \$2<=45)} END {if (NR==0) exit 1}'"
 
-# run_check 106 "JR4.B.2.1" \
-#     "grep -E -q 'umask 027|umask 0027' /root/.bashrc /root/.profile"
+run_check 106 "JR4.C.5.4.2.6" \
+    "grep -REq '^\\s*umask\\s+(027|077)\\b|^\\s*UMASK\\s+(027|077)\\b' /root/.bash_profile /root/.profile /etc/profile /etc/bash.bashrc /etc/login.defs 2>/dev/null"
 
-# run_check 107 "JR4.B.3.1" \
-#     "grep -E -q 'TMOUT=(900|[1-8][0-9]{2}|[1-9][0-9]?)' /etc/profile /etc/profile.d/*.sh"
+run_check 107 "JR4.C.5.4.3.1" \
+    "grep -REq '^\\s*TMOUT\\s*=\\s*[1-9][0-9]{0,2}\\b|^\\s*typeset\\s+-xr\\s+TMOUT\\s*=\\s*[1-9][0-9]{0,2}\\b' /etc/profile /etc/profile.d/*.sh /etc/bash.bashrc 2>/dev/null"
 
-# run_check 108 "JR4.B.3.2" \
-#     "grep -E -q 'UMASK\s+027' /etc/login.defs"
+run_check 108 "JR4.C.5.4.3.2" \
+    "grep -REq '^\\s*umask\\s+(027|077)\\b|^\\s*UMASK\\s+(027|077)\\b' /etc/profile /etc/profile.d/*.sh /etc/bash.bashrc /etc/login.defs 2>/dev/null"
 
-# # ------------------------------------------------------------------------------
-# # 14. Remote Logging, Journald & Integrity Checking
-# # ------------------------------------------------------------------------------
-# run_check 109 "JR4.C.1.1" \
-#     "true"
+# ------------------------------------------------------------------------------
+# 9. Logging and Integrity
+# ------------------------------------------------------------------------------
+run_check 109 "JR4.C.6.1.2.1.1" \
+    "dpkg -s systemd-journal-remote >/dev/null 2>&1"
 
-# run_check 110 "JR4.C.1.2" \
-#     "true"
+run_check 110 "JR4.C.6.1.2.1.2" \
+    "systemctl is-enabled systemd-journal-upload 2>/dev/null | grep -q enabled && systemctl is-active systemd-journal-upload 2>/dev/null | grep -q active"
 
-# run_check 111 "JR4.C.1.3" \
-#     "true"
+run_check 111 "JR4.C.6.1.2.1.3" \
+    "! systemctl is-enabled systemd-journal-remote 2>/dev/null | grep -q enabled && ! systemctl is-active systemd-journal-remote 2>/dev/null | grep -q active"
 
-# run_check 112 "JR4.C.2.1" \
-#     "grep -E -q '^Compress=yes' /etc/systemd/journald.conf"
+run_check 112 "JR4.C.6.1.2.2" \
+    "grep -REq '^\\s*Compress\\s*=\\s*yes\\b' /etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf 2>/dev/null"
 
-# run_check 113 "JR4.C.2.2" \
-#     "grep -E -q '^Storage=persistent' /etc/systemd/journald.conf"
+run_check 113 "JR4.C.6.1.2.3" \
+    "grep -REq '^\\s*Storage\\s*=\\s*persistent\\b' /etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf 2>/dev/null"
 
-# run_check 114 "JR4.C.3.1" \
-#     "grep -E -q '^ForwardToSyslog=yes' /etc/systemd/journald.conf"
+run_check 114 "JR4.C.6.1.3.3" \
+    "grep -REq '^\\s*ForwardToSyslog\\s*=\\s*yes\\b' /etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf 2>/dev/null"
 
-# run_check 115 "JR4.C.4.1" \
-#     "find /var/log -type f -perm /027 | [ \$(wc -l) -eq 0 ]"
+run_check 115 "JR4.C.6.1.4.1" \
+    "! find /var/log -type f -perm /002 -print -quit 2>/dev/null | grep -q ."
 
-# run_check 116 "JR4.C.5.1" \
-#     "true"
+run_check 116 "JR4.C.6.2.1" \
+    "dpkg -s aide >/dev/null 2>&1 || dpkg -s aide-common >/dev/null 2>&1"
 
-# run_check 117 "JR4.C.6.2.1" \
-#     "[ ! -f /usr/bin/aide ] || [ -f /etc/cron.daily/aide ]"
+run_check 117 "JR4.C.6.2.2" \
+    "systemctl is-enabled aidecheck.service 2>/dev/null | grep -q enabled || systemctl is-enabled aidecheck.timer 2>/dev/null | grep -q enabled || grep -REq '\\baide(\\.wrapper)?\\s+--check\\b' /etc/cron.* /etc/crontab 2>/dev/null"
 
-# echo ""
-# echo "=== Audit Finished ==="
+
