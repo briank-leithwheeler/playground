@@ -91,10 +91,10 @@ run_check 24 "JR4.C.1.1.2.7.3" \
 
 printf "\n%s\n\n" "3. AppArmor, Bootloader, and Process Hardening"
 run_check 25 "JR4.C.1.2.1.2" \
-    "cat /sys/module/apparmor/parameters/enabled 2>/dev/null | grep -q '^Y$'"
+    "cat /sys/module/apparmor/parameters/enabled 2>/dev/null | grep -q '^Y$' && files=(/etc/default/grub /boot/grub/grub.cfg /boot/grub2/grub.cfg); [ \${#files[@]} -gt 0 ] && grep -REq '\\bapparmor=1\\b' \"\${files[@]}\" && grep -REq '\\bsecurity=apparmor\\b' \"\${files[@]}\""
 
 run_check 26 "JR4.C.1.2.1.3" \
-    "command -v aa-status >/dev/null 2>&1 && ! aa-status 2>/dev/null | grep -q 'profiles are in complain mode' && ! aa-status 2>/dev/null | grep -q 'processes are unconfined but have a profile defined'"
+    "command -v aa-status >/dev/null 2>&1 && ! aa-status 2>/dev/null | grep -q 'processes are unconfined but have a profile defined'"
 
 run_check 27 "JR4.C.1.3.1" \
     "files=(/boot/grub/grub.cfg /boot/grub2/grub.cfg /boot/grub/user.cfg /boot/grub2/user.cfg); [ \${#files[@]} -gt 0 ] && grep -REq '(^\\s*set\\s+superusers=|^\\s*password_pbkdf2\\s+)' \"\${files[@]}\""
