@@ -86,19 +86,16 @@ chown root:root /var/log/sudo.log
 chmod 600 /var/log/sudo.log
 '
 
-# # 83
-# sudo bash -c 'cat <<EOF > /etc/sudoers.d/99-hardening
-# Defaults logfile="/var/log/sudo.log"
-# Defaults timestamp_timeout=15
-# EOF
-# chown root:root /etc/sudoers.d/99-hardening
-# chmod 440 /etc/sudoers.d/99-hardening'
+# 83
+sudo bash -c 'cat <<EOF > /etc/sudoers.d/99-hardening
+Defaults logfile="/var/log/sudo.log"
+Defaults timestamp_timeout=15
+EOF
+chown root:root /etc/sudoers.d/99-hardening
+chmod 440 /etc/sudoers.d/99-hardening'
 
-# # 84
-# sudo bash -c '
-# sed -i "/pam_wheel.so/d" /etc/pam.d/su
-# printf "auth required pam_wheel.so use_uid group=sudo\n" >> /etc/pam.d/su
-# '
-
-
-
+# 84
+sudo bash -c '
+sed -i "/pam_wheel.so/d" /etc/pam.d/su
+printf "auth required pam_wheel.so use_uid group=sudo\n" >> /etc/pam.d/su
+'

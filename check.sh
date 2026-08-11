@@ -5,7 +5,7 @@ run_check() {
     local code_ref="$2"
     local cmd="$3"
 
-    bash -c "set -o pipefail; shopt -s nullglob; $cmd" > /dev/null 2>&1
+    sudo bash -c "set -o pipefail; shopt -s nullglob; $cmd" > /dev/null 2>&1
     local code=$?
 
     if [ $code -eq 0 ]; then
