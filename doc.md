@@ -17,13 +17,13 @@ These datastores will be consolidated into the `SAN-Prod-Vms-01`, `SAN-Prod-Vms-
 
 #### Implementation Steps
 
-##### Clean Up Existing VMware Storage
+##### 1. Clean Up Existing VMware Storage
 - Identify and delete unneeded, powered-off VMs.
 - Identify and remove orphaned Zerto folders and files.
 - Review existing datastores for unneeded temp files or stale data.
 - Unmount ISO images from VMs where they are no longer required, and migrate the ISO images to the `San-General-Storage` datastore.
 
-##### Migrate VMware Storage
+##### 2. Migrate VMware Storage
 Using VMware Storage vMotion, migrate virtual disks for all active VMs from `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` to `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, `and SAN-Prod-Vms-03`.
 3. Validate Storage Migration
 Verify all production VMs are running without errors.
