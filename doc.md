@@ -5,6 +5,7 @@ This document outlines the technical migration plan for relocating infrastructur
 Consolidate existing VMware storage onto three 9 TB SAN LUN to simplify datastore management. This eliminates the need to migrate large-capacity VMs between smaller datastores due to storage constraints.
 #### Storage Inventory
 The existing VMware storage footprint consists of six LUNs/datastores:
+
 - `SAN-Prod-Vms-01`
 - `SAN-Prod-Vms-02`
 - `SAN-Prod-Vms-03`
