@@ -138,6 +138,14 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 - Exit Maintenance Mode on `VANESXI04`.
 - Perform post-upgrade health checks, verify vSphere HA/DRS cluster status, and restore host cluster services.
 
+
+
+
+
+
+
+
+
 ### Phase 3: Additional Host Virtual Machine Migrations
 With the upgraded host infrastructure and target management plane operational, relocate remaining BCP virtual machines.
 
@@ -164,19 +172,11 @@ Re-establish backup pipelines and data protection post-migration.
 - Update Veeam backup jobs to discover and protect virtual machines via the upgraded `DEVVCENTER01` vCenter instance.
 - Execute active full backup jobs across all jobs to establish new recovery point baselines.
 
-### Phase 6: Datacenter Environmental Optimization
-
-#### Airflow Management
-- Evaluate server room thermal dynamics following hardware additions.
-- Install blanking panels in all vacant rack U-spaces to prevent hot-air recirculation.
-- Verify cold aisle containment and hot aisle isolation integrity across all racks.
-
-### Phase 7: Decommissioning & Cleanup
+### Phase 6: Decommissioning & Cleanup
 Once all services are validated and operational within the VAN datacenter, gracefully retire legacy gear.
 
 #### Server Decommissioning
 - Gracefully power down and unrack legacy hosts:
-  - `DEVESXI04`
   - `WVESXI01`
   - `WVESXI03`
   - `WVBACKUP01`
