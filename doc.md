@@ -253,7 +253,22 @@ Decommission and wipe legacy BCP hardware once Vancouver services are verified.
 > - **BCP Workstation Replacement:** BCP hardware cannot be decommissioned until a replacement solution for the BCP workstations is in place at another location.
 > - **Nightly BCP Restored VMs:** Decommissioning cannot proceed until VMs backed up and restored nightly to BCP have either been moved to ISM or designated as no longer essential.
 
-#### Hardware Decommissioning
+#### Implementation Steps
+
+#### 1. Domain Controller Decommissioning (WVDC01 & WVDC02)
+- **Pre-Demotion Verification:**
+  - Confirm no FSMO roles reside on `WVDC01` or `WVDC02` (`netdom query fsmo`).
+  - Repoint all DHCP scopes and statically configured devices/appliances using `WVDC01` or `WVDC02` for DNS to Vancouver domain controllers.
+  - Verify vCenter identity sources, internal LDAP/SSO bindings, and external services point to domain FQDN or Vancouver DCs.
+  - Confirm Active Directory replication is healthy across all forest domain controllers (`repadmin /replsummary`).
+- **Demotion & Cleanup:**
+  - Gracefully demote `WVDC02` via PowerShell (`Uninstall-ADDSDomainController`) or Server Manager.
+  - Wait for AD replication to complete across surviving DCs, then gracefully demote `WVDC01`.
+  - Verify DNS SRV records (`_ldap`, `_kerberos`, `gc`) and host A/PTR records for both DCs are removed from Active Directory Integrated DNS.
+  - Clean up server metadata in Active Directory Sites and Services.
+  - Power off and delete `WVDC01` and `WVDC02` virtual machines from vSphere.
+
+#### 2. Hardware Decommissioning
 - **Servers & Storage:**
   - Power down and unrack legacy hosts: `WVESXI01`, `WVESXI03`, and `WVBACKUP01`.
   - Securely wipe all physical drives.
@@ -261,7 +276,8 @@ Decommission and wipe legacy BCP hardware once Vancouver services are verified.
   - Power down, disconnect, and unrack network devices: firewalls, routers, switches, and console servers.
   - Remove all patch cables.
 - **Power & Rack Infrastructure:**
+  - Disconnect and unrack the rack KVM console and switch.
   - Power down, disconnect, and unrack rack PDUs.
   - Confirm if a dedicated UPS is present; if present, safely power down, disconnect battery packs, and unrack.
 - **Disposition:**
-  - Pack all servers, network gear, power equipment, and mounting rails for return, lease return, or e-waste recycling.
+  - All decommissioned BCP equipment will be recycled—no hardware is being kept. Pack all servers, network gear, KVM, power equipment, cabling, and mounting rails for certified e-waste recycling.
