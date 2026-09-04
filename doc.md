@@ -25,25 +25,31 @@ These datastores will be consolidated into the `SAN-Prod-Vms-01`, `SAN-Prod-Vms-
 
 ##### 2. Migrate VMware Storage
 Using VMware Storage vMotion, migrate virtual disks for all active VMs from `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` to `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, `and SAN-Prod-Vms-03`.
-3. Validate Storage Migration
+
+##### 3. Validate Storage Migration
 Verify all production VMs are running without errors.
 Verify all VM disk paths point to `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, `and SAN-Prod-Vms-03`.
 Confirm no active VMs, templates, snapshots, or ISO files remain on the empty datastores.
 Confirm required ISOs are accessible on `San-General-Storage`.
-4. Remove VMware Datastores
+##### 4. Remove VMware Datastores
 Unmount the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` datastores from all ESXi hosts.
 Delete the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` datastores from `VANVCENTER01`.
 Confirm the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` datastores are no longer visible or registered in VMware.
-5. Remove LUNs from the SAN
+##### 5. Remove LUNs from the SAN
 Unpresent and delete the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` LUNs on the SAN array.
 Rescan host HBAs to confirm clean removal.
 Verify `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, `and SAN-Prod-Vms-03` LUNs remain online and operational.
-6. Expand the remaining LUNs
+##### 6. Expand the remaining LUNs
 Extend the `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, `and SAN-Prod-Vms-03` LUNs on the SAN array to 9 TB.
 Rescan storage on all ESXi hosts.
 Expand the VMFS datastore in vCenter to consume the newly added capacity.
 Verify datastore capacity reports approximately 9 TB in both vCenter and the SAN management interface.
-Phase 2: Host Relocation, & Hardware Upgrade (WVESXI02)
+
+
+
+
+
+#### Phase 2: Host Relocation, & Hardware Upgrade (WVESXI02)
 This phase covers the migration of VMs from `WVESXI02` in the BCP facility (migrating target workloads to the VAN environment and remaining local workloads to `WVESXI01`), followed by physical relocation, firmware updates, ESXi hypervisor upgrades, switch configuration, host network configuration, and host renaming from `WVESXI02` to `VANESXI04`.
 Virtual Machine Inventory (VAN Migration)
 The following 11 active workloads currently hosted on `WVESXI02` will be migrated to active host servers in the Vancouver (VAN) datacenter cluster across the target ESXi hosts and target datastores:
