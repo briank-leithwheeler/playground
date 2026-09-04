@@ -4,7 +4,7 @@ This document details the migration plan for relocating virtual machines and ser
 ### Phase 1: Storage Preparation (VAN SAN)
 Consolidate existing VMware storage onto three 9 TB SAN LUNs (`SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`) to simplify datastore management and eliminate the need to migrate large-capacity VMs between smaller datastores. Once all VM storage has been migrated to the three datastores, the empty datastores are unmounted and decommissioned, and the three remaining LUNs will be expanded to 9 TB each.
 #### Storage Inventory
-Existing datastores (6):
+Existing datastores:
 - `SAN-Prod-Vms-01`
 - `SAN-Prod-Vms-02`
 - `SAN-Prod-Vms-03`
@@ -46,7 +46,7 @@ Expand the VMFS datastore in vCenter to consume the newly added capacity.
 Verify datastore capacity reports approximately 9 TB in both vCenter and the SAN management interface.
 
 ### Phase 2: Host Relocation & Hardware Upgrade (WVESXI02)
-This phase covers evacuating VMs from `WVESXI02` (migrating Vancouver-bound VMs to Vancouver and local VMs to `WVESXI01` or `WVESXI03`), followed by physically moving the server to Vancouver, updating firmware, upgrading ESXi, and renaming the host to `VANESXI04`.
+This phase covers migrating VMs off `WVESXI02` (moving Vancouver-bound VMs to Vancouver and local VMs to `WVESXI01` or `WVESXI03`), followed by physically moving the server to Vancouver, updating firmware, upgrading ESXi, and renaming the host to `VANESXI04`.
 
 #### Virtual Machine Inventory (VAN Migration)
 Virtual machines migrating from `WVESXI02` to the Vancouver cluster:
@@ -108,14 +108,14 @@ Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
 - **vCPU Allocation:** Adjust VM allocation to 12 vCPUs in vSphere on `INF-NFS-2`.
 - **Storage Expansion:** Expand vMDDK to 3 TB in vSphere, rescan the SCSI bus (`/sys/class/block/sdX/device/rescan`), and grow the PV/LV/filesystem (`pvresize`, `lvextend`, and `xfs_growfs` or `resize2fs`).
 
-##### 2. VM Evacuation (WVESXI02)
+##### 2. Migrate VMs Off WVESXI02
 - **BCP VM Migrations:** Perform cold migrations in vCenter for BCP VMs off `WVESXI02` to `WVESXI01` or `WVESXI03` via scheduled shutdowns.
 - **VAN VM Migrations:** Perform cold migrations using NFS via `INF-NFS-2` for Vancouver-bound VMs off `WVESXI02` to active Vancouver hosts via scheduled shutdowns.
 - **Maintenance Mode Entry:** Verify all VMs are running on target hosts without error, then place `WVESXI02` into vSphere Maintenance Mode.
 - **vCenter Removal:** Disconnect and remove `WVESXI02` from `WVVCENTER01`.
 
 ##### 3. Physical Relocation (WVESXI02)
-- Gracefully shut down `WVESXI02`.
+- Shut down `WVESXI02`.
 - Unrack, label all network/fiber cabling, and securely pack the server.
 - Transport hardware from the BCP facility to the Vancouver (VAN) server room.
 - Rack host in the designated enclosure and reconnect redundant power, network cables, and KVM.
@@ -161,7 +161,7 @@ Reconfigure Veeam backups post-migration.
 #### Veeam Infrastructure Configuration
 - Install and configure Veeam Backup & Replication components on `BACKUP02` to act as a dedicated backup proxy and repository.
 - Update Veeam backup jobs to discover and protect virtual machines via the upgraded `DEVVCENTER01` vCenter instance.
-- Run active full backup jobs across all workloads to start new backup chains.
+- Run active full backup jobs across all VMs to start new backup chains.
 
 ### Phase 6: Decommissioning & Cleanup
 Decommission and wipe legacy BCP hardware once Vancouver services are verified.
