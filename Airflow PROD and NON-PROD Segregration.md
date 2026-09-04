@@ -22,6 +22,13 @@ Migrate all DAGs to INF-SCHEDULER-2
 Also all connections and variables
 Shutdwon INF-CONTROL-1
 
+Then
+Migrate INF-SCHEDUELR-1 to ISM
+Wait for them to do it
+
+THen 
+Migrate functionality from -2 to -1
+Remove orhpaned connections and variables from  -2
 
 
 
