@@ -1,6 +1,10 @@
 # BCP to VAN Datacenter Migration Plan
 ## Executive Summary
 This document details the migration plan for relocating virtual machines and server hardware from the BCP datacenter to the Vancouver (VAN) datacenter. Primary goals: consolidate VMware storage onto three 9 TB LUNs, relocate and upgrade `WVESXI02` to `VANESXI04`, and move VMs without unplanned service downtime.
+
+> [!NOTE]
+> Tape backups will not be affected by this migration—nothing is being added or removed as a result of these changes.
+
 ### Phase 1: Storage Preparation (VAN SAN)
 Consolidate existing VMware storage onto three 9 TB SAN LUNs (`SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`) to simplify datastore management and eliminate the need to migrate large-capacity VMs between smaller datastores. Once all VM storage has been migrated to the three datastores, the empty datastores are unmounted and decommissioned, and the three remaining LUNs will be expanded to 9 TB each.
 #### Storage Inventory
@@ -118,17 +122,18 @@ Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
   - Cold migrate VM storage in batches onto the `INF-NFS-2` staging datastore.
   - Unregister the VMs from the source vCenter.
   - Register VMs in `VANVCENTER01` across target Vancouver hosts.
-  - Storage vMotion VM disks from `INF-NFS-2` onto target SAN datastore
+  - Storage vMotion VM disks from `INF-NFS-2` onto target SAN datastores.
   - Power on VMs, verify network port group / VLAN bindings, and validate services.
 - **Host Maintenance & vCenter Removal:**
   - Confirm zero active VMs remain running or registered on `WVESXI02`.
   - Place `WVESXI02` into vSphere Maintenance Mode.
   - Disconnect and remove `WVESXI02` from `WVVCENTER01` inventory.
 
-##### 3. Physical Relocation (WVESXI02)
+##### 3. Physical Relocation & Rack Preparation (WVESXI02)
 - Shut down `WVESXI02`.
 - Unrack, label all network/fiber cabling, and securely pack the server.
 - Transport hardware from the BCP facility to the Vancouver (VAN) server room.
+- Remove any old decommissioned servers still occupying space in the Vancouver racks to free up rack units, PDU outlets, and cabling paths.
 - Rack host in the designated enclosure and reconnect redundant power, network cables, and KVM.
 
 ##### 4. Re-IP & Host Renaming (VANESXI04)
@@ -236,21 +241,21 @@ Update Airflow PowerShell backup scripts and Veeam repositories to protect all m
 ### Phase 5: Decommissioning & Cleanup
 Decommission and wipe legacy BCP hardware once Vancouver services are verified.
 
-#### Server Decommissioning
-- Power down and unrack legacy hosts:
-  - `WVESXI01`
-  - `WVESXI03`
-  - `WVBACKUP01`
-- Securely wipe all physical drives.
-- Pack hardware for return, lease return, or e-waste recycling.
-
-#### VAN Server Room Cleanup
-- Route and tie down cabling in overhead and under-floor trays.
-- Clear boxes, pallet wrap, transit hardware, and trash from the server room floor.
+#### Hardware Decommissioning
+- **Servers & Storage:**
+  - Power down and unrack legacy hosts: `WVESXI01`, `WVESXI03`, and `WVBACKUP01`.
+  - Securely wipe all physical drives.
+- **Network Equipment:**
+  - Power down, disconnect, and unrack network devices: firewalls, routers, switches, and console servers.
+  - Remove all patch cables.
+- **Power & Rack Infrastructure:**
+  - Power down, disconnect, and unrack rack PDUs.
+  - Confirm if a dedicated UPS is present; if present, safely power down, disconnect battery packs, and unrack.
+- **Disposition:**
+  - Pack all servers, network gear, power equipment, and mounting rails for return, lease return, or e-waste recycling.
 
 ### NOTES FOR ME TO RESOVLE IN THIS DOC:
 - **BCP Shutdown:** BCP shutdown requires all essential VMs (currently without backups) to be moved or designated as non-essential.
 - **Daily Delta:** Daily delta replication volume could be a problem.
 - **NFS Server:** NFS server will need to shrink after migration, so clone it first.
-- **Tape Backups:** Evaluate impact on tape backups.
 - **Blockers:** Identify dependencies and what operations cannot proceed while a VM solution is not present.
