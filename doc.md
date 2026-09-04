@@ -257,7 +257,6 @@ Decommission and wipe legacy BCP hardware once Vancouver services are verified.
 
 #### 1. Domain Controller Decommissioning (WVDC01 & WVDC02)
 - **Pre-Demotion Verification:**
-  - Confirm no FSMO roles reside on `WVDC01` or `WVDC02` (`netdom query fsmo`).
   - Repoint all DHCP scopes and statically configured devices/appliances using `WVDC01` or `WVDC02` for DNS to Vancouver domain controllers.
   - Verify vCenter identity sources, internal LDAP/SSO bindings, and external services point to domain FQDN or Vancouver DCs.
   - Confirm Active Directory replication is healthy across all forest domain controllers (`repadmin /replsummary`).
