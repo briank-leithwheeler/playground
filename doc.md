@@ -96,17 +96,17 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 | `bcpvm-029` | 0 | 0 | 116.22 |
 | `bcpvm-030` | 0 | 0 | 116.22 |
 | **TOTAL** | **36 vCPU** | **162 GB** | **~5,100 GB (~5.00 TB)** |
-Implementation Steps
-1. NFS Preparation (INF-NFS-1)
+#### Implementation Steps
+##### 1. NFS Preparation (INF-NFS-1)
 Thread Scale: Set `RPCNFSDCOUNT=64` in `/etc/default/nfs-kernel-server` and restart `nfs-kernel-server`.
 Export Tuning: Update `/etc/exports` with `async` (and `no_wdelay`) options for active ESXi mounts, then apply via `exportfs -ra`.
 vCPU Allocation: Adjust VM allocation to 12 vCPUs in vSphere.
 Storage Expansion: Expand vMDDK to 3 TB in vSphere, rescan the SCSI bus (`/sys/class/block/sdX/device/rescan`), and grow the PV/LV/filesystem (`pvresize`, `lvextend`, and `xfs_growfs` or `resize2fs`).
-2. VM Evacuation (WVESXI02):
+##### 2. VM Evacuation (WVESXI02):
 Virtual Machine Inventory (BCP Migration): Perform cold migrations in vCenter for target BCP VMs off `WVESXI02` to `WVESXI01` or `WVESXI03` via scheduled shutdowns.
 Virtual Machine Inventory (VAN Migration): Perform cold migrations using NFS for the target VAN VMs off `WVESXI02` to active Vancouver hosts via scheduled shutdowns.
 WVESXI02 Maintenance Mode Entry: Verify all VMs are running on target hosts without error, then place `WVESXI02` into vSphere Maintenance Mode.
-3. Physical Relocation (WVESXI02)
+##### 3. Physical Relocation (WVESXI02)
 Gracefully shut down `WVESXI02`.
 Unrack, label all network/fiber cabling, and securely pack the server.
 Transport hardware from the BCP facility to the Vancouver (VAN) server room.
