@@ -141,14 +141,38 @@ Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
 With `VANESXI04` online in Vancouver, relocate the remaining BCP virtual machines.
 
 #### Virtual Machine Inventory (VAN Migration)
-Virtual machines migrating from `WVESXI01` and `WVESXI03` to `VANESXI04`:
+Virtual machines migrating from `WVESXI01`:
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
 | :--- | ---: | ---: | ---: |
-| `testapx-app11` | 4 | 24 | 188.1 |
-| `testapx-db11` | 8 | 32 | 1382.4 |
-| **TOTAL** | **12 vCPU** | **56 GB** | **~1,571 GB (~1.57 TB)** |
+| `testapx-app01` | - | 28 | 163.94 |
+| `testapx-app11` | 4 | 24 | 188.11 |
+| `testapx-db01` | - | 36 | 1,290.24 |
+| `testapx-db11` | 8 | 32 | 1,382.40 |
+| `testlw-app01` | - | 16 | 106.73 |
+| `testlw-app02` | - | 20 | 106.22 |
+| `testlw-db01` | - | 96 | 1,771.52 |
+| `testlw-int02` | - | 24 | 89.48 |
+| `testlz-app01` | - | 24 | 120.10 |
+| `testlz-db01` | - | 18 | 2,222.08 |
+| **TOTAL** | - | **318 GB** | **~7,441 GB (~7.27 TB)** |
 
-- **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into `VANESXI04` via NFS.
+Virtual machines migrating from `WVESXI03`:
+| Name | NumCpu | MemoryGB | ProvisionedDiskGB |
+| :--- | ---: | ---: | ---: |
+| `devapx-app11` | - | 28 | 188.38 |
+| `devapx-db11` | - | 46 | 1,382.40 |
+| `devlw-app01` | - | 13 | 107.21 |
+| `devlw-app02` | - | 13 | 106.20 |
+| `devlw-db01` | - | 21 | 1,771.52 |
+| `devlw-int02` | - | 22 | 89.45 |
+| `devlz-app01` | - | 8 | 120.20 |
+| `devlz-db01` | - | 13 | 2,222.08 |
+| `venapx-db11` | - | 32 | 1,351.68 |
+| `venlw-db01` | - | 19 | 1,699.84 |
+| `venlz-db01` | - | 11 | 2,150.40 |
+| **TOTAL** | - | **226 GB** | **~11,189 GB (~10.93 TB)** |
+
+- **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into the Vancovuer cluster via NFS.
 - **VM Migration (`WVESXI03`):** Migrate active VMs from `WVESXI03` into `VANESXI04` via NFS.
 
 ### Phase 4: Workstation Relocation
