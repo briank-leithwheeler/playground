@@ -43,7 +43,7 @@ Verify datastore capacity reports approximately 9 TB in both vCenter and the SAN
 
 
 #### Phase 2: Host Relocation, & Hardware Upgrade (WVESXI02)
-This phase covers the migration of VMs from `WVESXI02` in the BCP facility (migrating target workloads to the VAN environment and remaining local workloads to `WVESXI01`), followed by physical relocation, firmware updates, ESXi hypervisor upgrades, switch configuration, host network configuration, and host renaming from `WVESXI02` to `VANESXI04`.
+This phase covers the migration of VMs from `WVESXI02` in the BCP facility (migrating target workloads to the VAN environment and remaining workloads to `WVESXI01` or `WVESXI03`), followed by physical relocation, firmware updates, ESXi hypervisor upgrades, switch configuration, host network configuration, and host renaming from `WVESXI02` to `VANESXI04`.
 ##### Virtual Machine Inventory (VAN Migration)
 The following 11 active workloads currently hosted on `WVESXI02` will be migrated to active host servers in the Vancouver (VAN) datacenter cluster across the target ESXi hosts and target datastores:
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
