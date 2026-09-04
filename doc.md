@@ -92,21 +92,19 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 | `bcpvm-029` | 0 | 0 | 116.22 |
 | `bcpvm-030` | 0 | 0 | 116.22 |
 | **TOTAL** | **36 vCPU** | **162 GB** | **~5,100 GB (~5.00 TB)** |
-
-
-
-
 #### Implementation Steps
 
-##### 1. NFS Preparation (INF-NFS-1)
+##### 1. NFS Server Provisioning & Preparation (INF-NFS-1 → INF-NFS-2)
+- **VM Cloning:** Clone VM `INF-NFS-1` to create `INF-NFS-2` in vSphere/vCenter to preserve the original NFS instance.
+- **Hostname & DNS:** Update internal hostname configuration on `INF-NFS-2` (`/etc/hostname` and `/etc/hosts`), assign static IP, and create a DNS A record.
 - **Thread Scale:** Set `RPCNFSDCOUNT=64` in `/etc/default/nfs-kernel-server` and restart `nfs-kernel-server`.
 - **Export Tuning:** Update `/etc/exports` with `async` (and `no_wdelay`) options for active ESXi mounts, then apply via `exportfs -ra`.
-- **vCPU Allocation:** Adjust VM allocation to 12 vCPUs in vSphere.
+- **vCPU Allocation:** Adjust VM allocation to 12 vCPUs in vSphere on `INF-NFS-2`.
 - **Storage Expansion:** Expand vMDDK to 3 TB in vSphere, rescan the SCSI bus (`/sys/class/block/sdX/device/rescan`), and grow the PV/LV/filesystem (`pvresize`, `lvextend`, and `xfs_growfs` or `resize2fs`).
 
 ##### 2. VM Evacuation (WVESXI02)
 - **Virtual Machine Inventory (BCP Migration):** Perform cold migrations in vCenter for target BCP VMs off `WVESXI02` to `WVESXI01` or `WVESXI03` via scheduled shutdowns.
-- **Virtual Machine Inventory (VAN Migration):** Perform cold migrations using NFS for the target VAN VMs off `WVESXI02` to active Vancouver hosts via scheduled shutdowns.
+- **Virtual Machine Inventory (VAN Migration):** Perform cold migrations using NFS via `INF-NFS-2` for the target VAN VMs off `WVESXI02` to active Vancouver hosts via scheduled shutdowns.
 - **WVESXI02 Maintenance Mode Entry:** Verify all VMs are running on target hosts without error, then place `WVESXI02` into vSphere Maintenance Mode.
 
 ##### 3. Physical Relocation (WVESXI02)
@@ -130,7 +128,7 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 - Exit Maintenance Mode on `VANESXI04`.
 - Perform post-upgrade health checks, verify vSphere HA/DRS cluster status, and restore host cluster services.
 
-### Phase 4: vCenter Management Replacement
+### Phase 3: vCenter Management Replacement
 Modernize the management plane by deploying a new vCenter Server Appliance.
 
 #### vCenter Deployment (`VANVCENTER02`)
@@ -138,17 +136,17 @@ Modernize the management plane by deploying a new vCenter Server Appliance.
 - Configure Single Sign-On (SSO) domain integration, licensing, roles, and access controls.
 - Register upgraded and relocated ESXi hosts under the management of `VANVCENTER02`.
 
-### Phase 5: Additional Host Virtual Machine Migrations
+### Phase 4: Additional Host Virtual Machine Migrations
 With the upgraded host infrastructure and target management plane operational, relocate remaining BCP virtual machines.
 
 - **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into the consolidated VAN cluster.
 - **VM Migration (`WVESXI03`):** Migrate active VMs from `WVESXI03` into the consolidated VAN cluster.
 
-### Phase 6: Workstation Relocation
+### Phase 5: Workstation Relocation
 - **Action Item:** Identify target office desks or staging areas within the Vancouver facility for physical workstations currently deployed at the BCP site.
 - **Status:** Pending Location Confirmation
 
-### Phase 7: Backup & Data Protection (Veeam Integration)
+### Phase 6: Backup & Data Protection (Veeam Integration)
 Re-establish backup pipelines and data protection post-migration.
 
 #### Veeam Infrastructure Configuration
