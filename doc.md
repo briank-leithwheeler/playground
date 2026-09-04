@@ -22,23 +22,25 @@ These datastores will be consolidated into the `SAN-Prod-Vms-01`, `SAN-Prod-Vms-
 - Identify and remove orphaned Zerto folders and files.
 - Review existing datastores for unneeded temp files or stale data.
 - Unmount ISO images from VMs where they are no longer required, and migrate the ISO images to the `San-General-Storage` datastore.
-
 ##### 2. Migrate VMware Storage
-Using VMware Storage vMotion, migrate virtual disks for all active VMs from `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` to `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, `and SAN-Prod-Vms-03`.
+Using VMware Storage vMotion, migrate virtual disks for all active VMs from `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, and `San-Tech-Vms` to `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`.
 
 ##### 3. Validate Storage Migration
 Verify all production VMs are running without errors.
-Verify all VM disk paths point to `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, `and SAN-Prod-Vms-03`.
+Verify all VM disk paths point to `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`.
 Confirm no active VMs, templates, snapshots, or ISO files remain on the empty datastores.
 Confirm required ISOs are accessible on `San-General-Storage`.
+
 ##### 4. Remove VMware Datastores
 Unmount the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` datastores from all ESXi hosts.
 Delete the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` datastores from `VANVCENTER01`.
 Confirm the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` datastores are no longer visible or registered in VMware.
+
 ##### 5. Remove LUNs from the SAN
 Unpresent and delete the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` LUNs on the SAN array.
 Rescan host HBAs to confirm clean removal.
 Verify `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, `and SAN-Prod-Vms-03` LUNs remain online and operational.
+
 ##### 6. Expand the remaining LUNs
 Extend the `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, `and SAN-Prod-Vms-03` LUNs on the SAN array to 9 TB.
 Rescan storage on all ESXi hosts.
