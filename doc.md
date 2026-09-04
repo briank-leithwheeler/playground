@@ -11,27 +11,34 @@ The existing VMware storage footprint consists of six LUNs/datastores:
 - `SAN-Prod-Vms-04`
 - `SAN-Prod-Vms-05`
 - `San-Tech-Vms`
+
 #### Implementation Steps
+
 ##### 1. Clean Up Existing VMware Storage
 - Identify and delete unneeded, powered-off VMs.
 - Identify and remove orphaned Zerto folders and files.
 - Review existing datastores for unneeded temp files or stale data.
 - Unmount ISO images from VMs where they are no longer required, and migrate the ISO images to the `San-General-Storage` datastore.
+
 ##### 2. Migrate VMware Storage
 Using VMware Storage vMotion, migrate virtual disks for all active VMs from `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, and `San-Tech-Vms` to `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`.
+
 ##### 3. Validate Storage Migration
 Verify all production VMs are running without errors.
 Verify all VM disk paths point to `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`.
 Confirm no active VMs, templates, snapshots, or ISO files remain on the empty datastores.
 Confirm required ISOs are accessible on `San-General-Storage`.
+
 ##### 4. Remove VMware Datastores
 Unmount the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, and `San-Tech-Vms` datastores from all ESXi hosts.
 Delete the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, and `San-Tech-Vms` datastores from `VANVCENTER01`.
 Confirm the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, and `San-Tech-Vms` datastores are no longer visible or registered in VMware.
+
 ##### 5. Remove LUNs from the SAN
 Unpresent and delete the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, and `San-Tech-Vms` LUNs on the SAN array.
 Rescan host HBAs to confirm clean removal.
 Verify `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03` LUNs remain online and operational.
+
 ##### 6. Expand the remaining LUNs
 Extend the `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03` LUNs on the SAN array to 9 TB.
 Rescan storage on all ESXi hosts.
@@ -40,6 +47,7 @@ Verify datastore capacity reports approximately 9 TB in both vCenter and the SAN
 
 ### Phase 2: Host Relocation, & Hardware Upgrade (WVESXI02)
 This phase covers the migration of virtual machines from `WVESXI02` in the BCP facility (migrating target virtual machines to the VAN environment and remaining virtual machines to `WVESXI01` or `WVESXI03`), followed by physical relocation, firmware updates, ESXi hypervisor upgrades, switch configuration, host network configuration, and host renaming from `WVESXI02` to `VANESXI04`.
+
 #### Virtual Machine Inventory (VAN Migration)
 The following virtual machines currently hosted on `WVESXI02` will be migrated to active host servers in the Vancouver (VAN) datacenter cluster across the target ESXi hosts and target datastores:
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
@@ -59,13 +67,10 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 
 #### Virtual Machine Inventory (BCP Migration)
 The following virtual machines currently hosted on `WVESXI02` will be migrated to `WVESXI01` or `WVESXI03`:
-
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
 | :--- | ---: | ---: | ---: |
 | `ftd-bcp` | 8 | 28 | 278.96 |
 | `tem-cgy-win2025` | 2 | 8 | 73.45 |
-| `testapx-app11` | 4 | 24 | 188.1 |
-| `testapx-db11` | 8 | 32 | 1382.4 |
 | `w11vm001` | 4 | 16 | 116.47 |
 | `w11vm002` | 4 | 16 | 116.47 |
 | `w11vm003` | 4 | 10 | 116.51 |
@@ -92,6 +97,7 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 | `bcpvm-029` | 0 | 0 | 116.22 |
 | `bcpvm-030` | 0 | 0 | 116.22 |
 | **TOTAL** | **36 vCPU** | **162 GB** | **~5,100 GB (~5.00 TB)** |
+
 #### Implementation Steps
 
 ##### 1. NFS Server Provisioning & Preparation (INF-NFS-2)
@@ -145,11 +151,23 @@ Modernize the management plane by deploying a new vCenter Server Appliance.
 
 
 
+
+
+
+
 ### Phase 4: Additional Host Virtual Machine Migrations
 With the upgraded host infrastructure and target management plane operational, relocate remaining BCP virtual machines.
 
-- **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into the consolidated VAN cluster.
-- **VM Migration (`WVESXI03`):** Migrate active VMs from `WVESXI03` into the consolidated VAN cluster.
+#### Virtual Machine Inventory (VAN Migration)
+The following virtual machines currently hosted on `WVESXI01` and `WVESXI03` will be migrated to `VANESXI04`:
+| Name | NumCpu | MemoryGB | ProvisionedDiskGB |
+| :--- | ---: | ---: | ---: |
+| `testapx-app11` | 4 | 24 | 188.1 |
+| `testapx-db11` | 8 | 32 | 1382.4 |
+| **TOTAL** | **36 vCPU** | **162 GB** | **~5,100 GB (~5.00 TB)** |
+
+- **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into `VANESXI04` via NFS
+- **VM Migration (`WVESXI03`):** Migrate active VMs from `WVESXI03` into `VANESXI04` via NFS
 
 ### Phase 5: Workstation Relocation
 - **Action Item:** Identify target office desks or staging areas within the Vancouver facility for physical workstations currently deployed at the BCP site.
