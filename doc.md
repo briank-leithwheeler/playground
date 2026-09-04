@@ -124,6 +124,7 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 ##### 6. vCenter Upgrade (DEVVCENTER01)
 - Upgrade `DEVVCENTER01` to vSphere version 8 to match the version of `VANVCENTER01`.
 - Verify vCenter appliance health and service operational status post-upgrade.
+
 ##### 7. ESXi Upgrade & Cluster Join (VANESXI04)
 - Add `VANESXI04` into the VAN vSphere cluster.
 - Upgrade hypervisor on `VANESXI04` to the designated target ESXi standard version.
