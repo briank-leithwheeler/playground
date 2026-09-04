@@ -109,10 +109,21 @@ Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
 - **Storage Expansion:** Expand vMDDK to 3 TB in vSphere, rescan the SCSI bus (`/sys/class/block/sdX/device/rescan`), and grow the PV/LV/filesystem (`pvresize`, `lvextend`, and `xfs_growfs` or `resize2fs`).
 
 ##### 2. Migrate VMs Off WVESXI02
-- **BCP VM Migrations:** Perform cold migrations in vCenter for BCP VMs off `WVESXI02` to `WVESXI01` or `WVESXI03` via scheduled shutdowns.
-- **VAN VM Migrations:** Perform cold migrations using NFS via `INF-NFS-2` for Vancouver-bound VMs off `WVESXI02` to active Vancouver hosts via scheduled shutdowns.
-- **Maintenance Mode Entry:** Verify all VMs are running on target hosts without error, then place `WVESXI02` into vSphere Maintenance Mode.
-- **vCenter Removal:** Disconnect and remove `WVESXI02` from `WVVCENTER01`.
+- **BCP VM Migrations (to `WVESXI01` / `WVESXI03`):**
+  - Shut down target BCP VMs during scheduled maintenance windows.
+  - Cold migrate VMs in vCenter from `WVESXI02` to `WVESXI01` or `WVESXI03`.
+  - Power on VMs on destination BCP hosts and verify system health.
+- **Vancouver VM Migrations (via `INF-NFS-2`):**
+  - Shut down the Vancouver-bound VMs during scheduled maintenance windows.
+  - Cold migrate VM storage in batches onto the `INF-NFS-2` staging datastore.
+  - Unregister the VMs from the source vCenter (`WVVCENTER01`).
+  - Register VMs in `VANVCENTER01` across target Vancouver hosts.
+  - Storage vMotion VM disks from `INF-NFS-2` onto target SAN datastore
+  - Power on VMs, verify network port group / VLAN bindings, and validate services.
+- **Host Maintenance & vCenter Removal:**
+  - Confirm zero active VMs remain running or registered on `WVESXI02`.
+  - Place `WVESXI02` into vSphere Maintenance Mode.
+  - Disconnect and remove `WVESXI02` from `WVVCENTER01` inventory.
 
 ##### 3. Physical Relocation (WVESXI02)
 - Shut down `WVESXI02`.
@@ -174,8 +185,23 @@ Virtual machines migrating from `WVESXI03`:
 
 #### Implementation Steps
 
-##### **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into the Vancouver cluster via NFS.
-##### **VM Migration (`WVESXI03`):** Migrate active VMs from `WVESXI03` into `VANESXI04` via NFS.
+##### 1. VM Migration (WVESXI01)
+- Shut down target test VMs on `WVESXI01` via scheduled maintenance windows.
+- Cold migrate VM storage in batches to the `INF-NFS-2` staging datastore.
+- Unregister the VMs from the source vCenter.
+- Register VMs in `DEVVCENTER01` on the Vancouver cluster.
+- Storage vMotion VM disks from `INF-NFS-2` to target SAN datastores to clear staging capacity for subsequent transfers.
+- Power on VMs, verify network port group / VLAN bindings, and validate system functionality.
+- Once all VMs are verified operational, place `WVESXI01` into Maintenance Mode and disconnect/remove it from `WVVCENTER01`.
+
+##### 2. VM Migration (WVESXI03)
+- Shut down target dev and vendor VMs on `WVESXI03` via scheduled maintenance windows.
+- Cold migrate VM storage in batches to the `INF-NFS-2` staging datastore.
+- Unregister the VMs from the source vCenter
+- Register VMs in `DEVVCENTER01` on the Vancouver cluster
+- Storage vMotion VM disks from `INF-NFS-2` to target SAN datastores
+- Power on VMs, verify network port group / VLAN bindings, and validate system functionality.
+- Once all VMs are verified operational, place `WVESXI03` into Maintenance Mode and disconnect/remove it from `WVVCENTER01`.
 
 ### Phase 4: Workstation Relocation
 - **Action Item:** Identify target office desks or staging areas within the Vancouver facility for physical workstations currently deployed at the BCP site.
