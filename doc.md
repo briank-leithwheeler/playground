@@ -25,15 +25,15 @@ Verify all VM disk paths point to `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN
 Confirm no active VMs, templates, snapshots, or ISO files remain on the empty datastores.
 Confirm required ISOs are accessible on `San-General-Storage`.
 ##### 4. Remove VMware Datastores
-Unmount the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` datastores from all ESXi hosts.
-Delete the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` datastores from `VANVCENTER01`.
-Confirm the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` datastores are no longer visible or registered in VMware.
+Unmount the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, and `San-Tech-Vms` datastores from all ESXi hosts.
+Delete the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, and `San-Tech-Vms` datastores from `VANVCENTER01`.
+Confirm the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, and `San-Tech-Vms` datastores are no longer visible or registered in VMware.
 ##### 5. Remove LUNs from the SAN
-Unpresent and delete the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, `and` `San-Tech-Vms` LUNs on the SAN array.
+Unpresent and delete the `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, and `San-Tech-Vms` LUNs on the SAN array.
 Rescan host HBAs to confirm clean removal.
-Verify `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, `and SAN-Prod-Vms-03` LUNs remain online and operational.
+Verify `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03` LUNs remain online and operational.
 ##### 6. Expand the remaining LUNs
-Extend the `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, `and SAN-Prod-Vms-03` LUNs on the SAN array to 9 TB.
+Extend the `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03` LUNs on the SAN array to 9 TB.
 Rescan storage on all ESXi hosts.
 Expand the VMFS datastore in vCenter to consume the newly added capacity.
 Verify datastore capacity reports approximately 9 TB in both vCenter and the SAN management interface.
