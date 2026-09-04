@@ -203,10 +203,6 @@ Virtual machines migrating from `WVESXI03`:
 - Power on VMs, verify network port group / VLAN bindings, and validate system functionality.
 - Once all VMs are verified operational, place `WVESXI03` into Maintenance Mode and disconnect/remove it from `WVVCENTER01`.
 
-### Phase 4: Workstation Relocation
-- **Action Item:** Identify target office desks or staging areas within the Vancouver facility for physical workstations currently deployed at the BCP site.
-- **Status:** Pending Location Confirmation
-
 ### Phase 5: Backup & Data Protection (Veeam Integration)
 Reconfigure Veeam backups post-migration.
 
