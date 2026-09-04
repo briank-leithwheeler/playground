@@ -132,30 +132,13 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 - Upgrade `DEVVCENTER01` to vSphere version 8 to match the version of `VANVCENTER01`.
 - Verify vCenter appliance health and service operational status post-upgrade.
 
-##### 7. ESXi Upgrade (VANESXI04)
+##### 7. ESXi Upgrade & Cluster Join (VANESXI04)
 - Upgrade hypervisor on `VANESXI04` to the designated target ESXi standard version.
+- Add `VANESXI04` to `DEVVCENTER01`.
 - Exit Maintenance Mode on `VANESXI04`.
 - Perform post-upgrade health checks, verify vSphere HA/DRS cluster status, and restore host cluster services.
 
-### Phase 3: vCenter Management Replacement
-Modernize the management plane by deploying a new vCenter Server Appliance.
-
-#### Implementation Steps
-
-##### 1. vCenter Deployment (`VANVCENTER02`)
-- Deploy and configure a clean vCenter Server Appliance (VCSA) instance: `VANVCENTER02`.
-- Configure Single Sign-On (SSO) domain integration, licensing, roles, and access controls.
-- Register `VANESXI04` under the management of `VANVCENTER02`.
-
-
-
-
-
-
-
-
-
-### Phase 4: Additional Host Virtual Machine Migrations
+### Phase 3: Additional Host Virtual Machine Migrations
 With the upgraded host infrastructure and target management plane operational, relocate remaining BCP virtual machines.
 
 #### Virtual Machine Inventory (VAN Migration)
@@ -169,26 +152,26 @@ The following virtual machines currently hosted on `WVESXI01` and `WVESXI03` wil
 - **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into `VANESXI04` via NFS
 - **VM Migration (`WVESXI03`):** Migrate active VMs from `WVESXI03` into `VANESXI04` via NFS
 
-### Phase 5: Workstation Relocation
+### Phase 4: Workstation Relocation
 - **Action Item:** Identify target office desks or staging areas within the Vancouver facility for physical workstations currently deployed at the BCP site.
 - **Status:** Pending Location Confirmation
 
-### Phase 6: Backup & Data Protection (Veeam Integration)
+### Phase 5: Backup & Data Protection (Veeam Integration)
 Re-establish backup pipelines and data protection post-migration.
 
 #### Veeam Infrastructure Configuration
 - Install and configure Veeam Backup & Replication components on `BACKUP02` to function as a dedicated backup proxy and repository.
-- Update Veeam backup jobs to discover and protect virtual machines via the new `VANVCENTER02` vCenter instance.
+- Update Veeam backup jobs to discover and protect virtual machines via the upgraded `DEVVCENTER01` vCenter instance.
 - Execute active full backup jobs across all jobs to establish new recovery point baselines.
 
-### Phase 8: Datacenter Environmental Optimization
+### Phase 6: Datacenter Environmental Optimization
 
 #### Airflow Management
 - Evaluate server room thermal dynamics following hardware additions.
 - Install blanking panels in all vacant rack U-spaces to prevent hot-air recirculation.
 - Verify cold aisle containment and hot aisle isolation integrity across all racks.
 
-### Phase 9: Decommissioning & Cleanup
+### Phase 7: Decommissioning & Cleanup
 Once all services are validated and operational within the VAN datacenter, gracefully retire legacy gear.
 
 #### Server Decommissioning
