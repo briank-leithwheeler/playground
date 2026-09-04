@@ -147,7 +147,7 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 
 
 ### Phase 3: Additional Host Virtual Machine Migrations
-With the upgraded host infrastructure and target management plane operational, relocate remaining BCP virtual machines.
+With the upgraded host infrastructure, relocate remaining BCP virtual machines.
 
 #### Virtual Machine Inventory (VAN Migration)
 The following virtual machines currently hosted on `WVESXI01` and `WVESXI03` will be migrated to `VANESXI04`:
