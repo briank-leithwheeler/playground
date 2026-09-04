@@ -207,27 +207,29 @@ Virtual machines migrating from `WVESXI03`:
 Update Airflow PowerShell backup scripts and Veeam repositories to protect all migrated virtual machines in Vancouver.
 
 > [!NOTE]
-> All backup configurations are defined in PowerShell scripts executed by Airflow, not in the Veeam UI. With `WVBACKUP01` being decommissioned, `BACKUP01` cannot complete weekend backup runs alone for all VMs. `BACKUP02` will be brought online to split the workload with `BACKUP01`. Splitting between two backup servers means less total space is used on each and backups finish within the weekend window. Archive folders on both `BACKUP01` and `BACKUP02` must also be cleaned up first to ensure enough disk space is available for all VMs.
+> All backup configurations are defined in PowerShell scripts executed by Airflow, not in the Veeam UI. With `WVBACKUP01` being decommissioned, `BACKUP01` cannot complete weekend backup runs alone for all VMs. `BACKUP01` will be upgraded to the latest Veeam release, and `BACKUP02` will be deployed with the matching version to split the workload. Splitting between two backup servers means less total space is used on each and backups finish within the weekend window. Archive folders on both `BACKUP01` and `BACKUP02` must also be cleaned up first to ensure enough disk space is available for all VMs.
 
 #### Implementation Steps
 
 ##### 1. Clean Up Archive Folders (BACKUP01 & BACKUP02)
 - Delete old archive folders and orphaned backups on `BACKUP01` and `BACKUP02` to free disk space for incoming VMs.
 
-##### 2. Provision BACKUP02 Proxy & Repository
-- Install Veeam components and PowerShell modules on `BACKUP02`.
+##### 2. Upgrade BACKUP01 Veeam Instance
+- Upgrade `BACKUP01` to the latest Veeam Backup & Replication release and update its PowerShell modules for vSphere 8 support.
+
+##### 3. Provision BACKUP02 Proxy & Repository
+- Install the matching latest Veeam release and PowerShell modules on `BACKUP02`.
 - Configure `BACKUP02` as a backup proxy and local repository.
-- Ensure Veeam and PowerShell modules are compatible with vSphere 8.
 - Register `DEVVCENTER01` and `VANVCENTER01` in Veeam.
 
-##### 3. Update Airflow Backup Scripts
+##### 4. Update Airflow Backup Scripts
 - Update the Airflow PowerShell scripts to split VM backups between `BACKUP01` and `BACKUP02` instead of targeting `WVBACKUP01`.
 - Balance VM assignments between both servers to keep repository usage even and avoid bottlenecks.
 
-##### 4. Run Initial Backups
+##### 5. Run Initial Backups
 - Trigger backup runs from Airflow and verify jobs complete successfully on both `BACKUP01` and `BACKUP02`.
 
-##### 5. Update Zabbix Monitoring
+##### 6. Update Zabbix Monitoring
 - Update Zabbix backup-age checks to monitor `BACKUP01` and `BACKUP02`.
 - Remove checks and alerts for `WVBACKUP01`.
 
@@ -246,8 +248,7 @@ Decommission and wipe legacy BCP hardware once Vancouver services are verified.
 - Route and tie down cabling in overhead and under-floor trays.
 - Clear boxes, pallet wrap, transit hardware, and trash from the server room floor.
 
-### Considerations & Potential Blockers
-- **Veeam Upgrade:** Install Veeam with upgrade.
+### NOTES FOR ME TO RESOVLE IN THIS DOC:
 - **BCP Shutdown:** BCP shutdown requires all essential VMs (currently without backups) to be moved or designated as non-essential.
 - **Daily Delta:** Daily delta replication volume could be a problem.
 - **NFS Server:** NFS server will need to shrink after migration, so clone it first.
