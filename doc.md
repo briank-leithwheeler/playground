@@ -115,9 +115,8 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 
 ##### 4. Re-IP & Host Renaming (VANESXI04)
 - Update out-of-band management (iLO/iDRAC) and host management IP configurations to match the VAN datacenter network subnets.
-- Update DNS records (forward A and reverse PTR) for `VANESXI04`.
+- Create DNS records (forward A and reverse PTR) for `VANESXI04`.
 - Update the hostname and FQDN on the ESXi host via DCUI / Host Client (`esxcli system hostname set --host=VANESXI04`).
-- Regenerate host SSL certificates to reflect the new FQDN and restart host management agents.
 
 ##### 5. Firmware & Hardware Patching
 - Apply system updates including motherboard BIOS, out-of-band management (iLO/iDRAC), network controllers, and RAID/HBA firmware.
