@@ -197,36 +197,43 @@ Virtual machines migrating from `WVESXI03`:
 ##### 2. VM Migration (WVESXI03)
 - Shut down target dev and vendor VMs on `WVESXI03` via scheduled maintenance windows.
 - Cold migrate VM storage in batches to the `INF-NFS-2` staging datastore.
-- Unregister the VMs from the source vCenter
-- Register VMs in `DEVVCENTER01` on the Vancouver cluster
-- Storage vMotion VM disks from `INF-NFS-2` to target SAN datastores
+- Unregister the VMs from the source vCenter.
+- Register VMs in `DEVVCENTER01` on the Vancouver cluster.
+- Storage vMotion VM disks from `INF-NFS-2` to target SAN datastores.
 - Power on VMs, verify network port group / VLAN bindings, and validate system functionality.
 - Once all VMs are verified operational, place `WVESXI03` into Maintenance Mode and disconnect/remove it from `WVVCENTER01`.
 
-### Phase 4: Backup & Data Protection (Veeam Integration)
-Reconfigure Veeam backup infrastructure and jobs to protect all migrated virtual machines in Vancouver.
+### Phase 4: Backup & Data Protection (Veeam & Airflow Integration)
+Update Airflow-orchestrated PowerShell backup automation and Veeam repository infrastructure to protect all migrated virtual machines in Vancouver.
 
 > [!NOTE]
-> Veeam currently runs across `WVBACKUP01` (BCP) and `BACKUP01` (Vancouver). With `WVBACKUP01` scheduled for decommissioning, `BACKUP01` cannot complete full weekend backup runs alone across the consolidated VM footprint. `BACKUP02` must be brought online to distribute the load with `BACKUP01`. Zabbix monitoring also requires updates to track backup age across both active servers.
+> All Veeam backup configurations, VM targeting, and execution schedules are driven entirely by Airflow via PowerShell scripts rather than configured manually in Veeam. With `WVBACKUP01` scheduled for decommissioning, `BACKUP01` cannot complete full weekend backup runs alone across all consolidated VMs. `BACKUP02` must be brought online to distribute the workload with `BACKUP01`. Splitting VMs between two backup servers means less total space is used on each local repository and ensures backups complete within the weekend window. Existing archive folders on both `BACKUP01` and `BACKUP02` must also be cleaned up prior to migration to ensure sufficient disk space is available for all incoming VMs. Zabbix monitoring also requires updates to track backup age across both active servers.
 
 #### Implementation Steps
 
-##### 1. Provision BACKUP02 Proxy & Repository
-- Install Veeam Backup & Replication components on `BACKUP02`.
+##### 1. Clean Up Repository Archive Folders (BACKUP01 & BACKUP02)
+- Review existing repository disks on `BACKUP01` and `BACKUP02` for outdated archive directories, orphaned backup files, or legacy backup chains.
+- Purge unneeded archive folders to reclaim storage space and ensure sufficient capacity for incoming virtual machine backups.
+- Confirm available repository volume space meets calculated retention requirements on both backup servers.
+
+##### 2. Provision BACKUP02 Proxy & Repository
+- Install Veeam Backup & Replication components and PowerShell modules on `BACKUP02`.
 - Configure `BACKUP02` as a dedicated backup proxy and local backup repository.
 - Verify high-throughput network connectivity between `BACKUP02`, ESXi storage networks, and target vCenter instances (`DEVVCENTER01` and `VANVCENTER01`).
-- Ensure Veeam version compatibility with vSphere 8.
+- Configure PowerShell remoting and execution permissions required for Airflow task runners.
+- Ensure Veeam version and PowerShell module compatibility with vSphere 8.
 
-##### 2. Rebalance and Update Backup Jobs
-- Reallocate VM backup jobs previously handled by `WVBACKUP01` evenly across `BACKUP01` and `BACKUP02` to balance ingestion and meet the weekend backup window.
-- Re-target all backup jobs to discover VMs via the upgraded `DEVVCENTER01` and Vancouver vCenter inventories, replacing stale source VM references.
-- Configure staggered job schedules across both backup servers to prevent storage contention.
+##### 3. Update Airflow PowerShell Backup Scripts & Job Configurations
+- Update the PowerShell configuration scripts managed by Airflow to reallocate VMs previously targeted to `WVBACKUP01` across `BACKUP01` and `BACKUP02`.
+- Update vCenter inventory targeting within the PowerShell scripts to discover and query VMs under `DEVVCENTER01` and Vancouver vCenter, removing references to `WVVCENTER01`.
+- Define repository mapping in the scripts so that VM backup streams are evenly balanced between `BACKUP01` and `BACKUP02`.
+- Update Airflow DAG schedules and task concurrency to stagger backup execution across both backup servers and fit within the weekend backup window.
 
-##### 3. Seed New Backup Chains
-- Execute active full backup runs for all reconfigured jobs on `BACKUP01` and `BACKUP02` to establish clean recovery baselines.
-- Verify job completion, backup success status, and storage utilization across both repositories.
+##### 4. Seed New Backup Chains via Airflow
+- Trigger initial active full backup DAG runs from Airflow for the newly reconfigured VM sets on `BACKUP01` and `BACKUP02`.
+- Verify successful script execution, Veeam task completion status, and repository storage utilization.
 
-##### 4. Update Zabbix Monitoring
+##### 5. Update Zabbix Monitoring
 - Update Zabbix backup-age monitoring templates and item keys to query backup file timestamps on both `BACKUP01` and `BACKUP02`.
 - Decommission or disable legacy Zabbix monitoring checks and alerts associated with `WVBACKUP01`.
 - Verify Zabbix dashboards and alert triggers report healthy backup status for all protected VMs.
