@@ -116,7 +116,7 @@ Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
 - **Vancouver VM Migrations (via `INF-NFS-2`):**
   - Shut down the Vancouver-bound VMs during scheduled maintenance windows.
   - Cold migrate VM storage in batches onto the `INF-NFS-2` staging datastore.
-  - Unregister the VMs from the source vCenter (`WVVCENTER01`).
+  - Unregister the VMs from the source vCenter.
   - Register VMs in `VANVCENTER01` across target Vancouver hosts.
   - Storage vMotion VM disks from `INF-NFS-2` onto target SAN datastore
   - Power on VMs, verify network port group / VLAN bindings, and validate services.
