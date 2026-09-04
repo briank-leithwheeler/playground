@@ -63,7 +63,10 @@ Virtual machines migrating from `WVESXI02` to the Vancouver cluster:
 | `uatlw-int02` | 8 | 24 | 89.38 |
 | `uatlz-app01` | 6 | 24 | 120.00 |
 | `uatlz-db01` | 8 | 96 | 2,217.01 |
-| **TOTAL** | **104 vCPU** | **442 GB** | **~10,059 GB (~9.82 TB)** |
+| `w11vm001` | 8 | 16 | 116.47 |
+| `w11vm002` | 8 | 16 | 116.47 |
+| `w11vm003` | 8 | 16 | 116.51 |
+| **TOTAL** | **128 vCPU** | **490 GB** | **~10,408 GB (~10.16 TB)** |
 
 #### Virtual Machine Inventory (BCP Migration)
 Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
@@ -71,9 +74,6 @@ Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
 | :--- | ---: | ---: | ---: |
 | `ftd-bcp` | 4 | 28 | 278.96 |
 | `tem-cgy-win2025` | 4 | 8 | 73.45 |
-| `w11vm001` | 8 | 16 | 116.47 |
-| `w11vm002` | 8 | 16 | 116.47 |
-| `w11vm003` | 8 | 16 | 116.51 |
 | `wvdc01` | 2 | 8 | 68.97 |
 | `wvvcenter01` | 4 | 19 | 720.15 |
 | `bcpvm-011` | 8 | 16 | 116.22 |
@@ -96,7 +96,7 @@ Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
 | `bcpvm-028` | 8 | 16 | 116.22 |
 | `bcpvm-029` | 8 | 16 | 116.22 |
 | `bcpvm-030` | 8 | 16 | 116.22 |
-| **TOTAL** | **198 vCPU** | **431 GB** | **~3,815 GB (~3.73 TB)** |
+| **TOTAL** | **174 vCPU** | **383 GB** | **~3,466 GB (~3.38 TB)** |
 
 #### Implementation Steps
 
@@ -203,15 +203,35 @@ Virtual machines migrating from `WVESXI03`:
 - Power on VMs, verify network port group / VLAN bindings, and validate system functionality.
 - Once all VMs are verified operational, place `WVESXI03` into Maintenance Mode and disconnect/remove it from `WVVCENTER01`.
 
-### Phase 5: Backup & Data Protection (Veeam Integration)
-Reconfigure Veeam backups post-migration.
+### Phase 4: Backup & Data Protection (Veeam Integration)
+Reconfigure Veeam backup infrastructure and jobs to protect all migrated virtual machines in Vancouver.
 
-#### Veeam Infrastructure Configuration
-- Install and configure Veeam Backup & Replication components on `BACKUP02` to act as a dedicated backup proxy and repository.
-- Update Veeam backup jobs to discover and protect virtual machines via the upgraded `DEVVCENTER01` vCenter instance.
-- Run active full backup jobs across all VMs to start new backup chains.
+> [!NOTE]
+> Veeam currently runs across `WVBACKUP01` (BCP) and `BACKUP01` (Vancouver). With `WVBACKUP01` scheduled for decommissioning, `BACKUP01` cannot complete full weekend backup runs alone across the consolidated VM footprint. `BACKUP02` must be brought online to distribute the load with `BACKUP01`. Zabbix monitoring also requires updates to track backup age across both active servers.
 
-### Phase 6: Decommissioning & Cleanup
+#### Implementation Steps
+
+##### 1. Provision BACKUP02 Proxy & Repository
+- Install Veeam Backup & Replication components on `BACKUP02`.
+- Configure `BACKUP02` as a dedicated backup proxy and local backup repository.
+- Verify high-throughput network connectivity between `BACKUP02`, ESXi storage networks, and target vCenter instances (`DEVVCENTER01` and `VANVCENTER01`).
+- Ensure Veeam version compatibility with vSphere 8.
+
+##### 2. Rebalance and Update Backup Jobs
+- Reallocate VM backup jobs previously handled by `WVBACKUP01` evenly across `BACKUP01` and `BACKUP02` to balance ingestion and meet the weekend backup window.
+- Re-target all backup jobs to discover VMs via the upgraded `DEVVCENTER01` and Vancouver vCenter inventories, replacing stale source VM references.
+- Configure staggered job schedules across both backup servers to prevent storage contention.
+
+##### 3. Seed New Backup Chains
+- Execute active full backup runs for all reconfigured jobs on `BACKUP01` and `BACKUP02` to establish clean recovery baselines.
+- Verify job completion, backup success status, and storage utilization across both repositories.
+
+##### 4. Update Zabbix Monitoring
+- Update Zabbix backup-age monitoring templates and item keys to query backup file timestamps on both `BACKUP01` and `BACKUP02`.
+- Decommission or disable legacy Zabbix monitoring checks and alerts associated with `WVBACKUP01`.
+- Verify Zabbix dashboards and alert triggers report healthy backup status for all protected VMs.
+
+### Phase 5: Decommissioning & Cleanup
 Decommission and wipe legacy BCP hardware once Vancouver services are verified.
 
 #### Server Decommissioning
