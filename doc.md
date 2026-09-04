@@ -26,6 +26,7 @@ Existing datastores:
 
 ##### 2. Migrate VMware Storage
 Using VMware Storage vMotion, migrate virtual disks for all active VMs from `SAN-Prod-Vms-04`, `SAN-Prod-Vms-05`, and `San-Tech-Vms` to `SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`.
+- *Note:* The VAN SAN maintains daily snapshots. Monitor storage and snapshot reserve capacity as data is relocated across datastores.
 
 ##### 3. Validate Storage Migration
 Verify all production VMs are running without errors.
@@ -123,6 +124,7 @@ Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
   - Unregister the VMs from the source vCenter.
   - Register VMs in `VANVCENTER01` across target Vancouver hosts.
   - Storage vMotion VM disks from `INF-NFS-2` onto target SAN datastores.
+    - *Note:* The VAN SAN maintains daily snapshots; monitor snapshot reserve capacity, as newly written VM data increases daily snapshot delta sizes.
   - Power on VMs, verify network port group / VLAN bindings, and validate services.
 - **Host Maintenance & vCenter Removal:**
   - Confirm zero active VMs remain running or registered on `WVESXI02`.
@@ -196,6 +198,7 @@ Virtual machines migrating from `WVESXI03`:
 - Unregister the VMs from the source vCenter.
 - Register VMs in `DEVVCENTER01` on the Vancouver cluster.
 - Storage vMotion VM disks from `INF-NFS-2` to target SAN datastores to clear staging capacity for subsequent transfers.
+  - *Note:* The VAN SAN maintains daily snapshots; monitor snapshot reserve capacity, as incoming VM data increases daily snapshot delta sizes.
 - Power on VMs, verify network port group / VLAN bindings, and validate system functionality.
 - Once all VMs are verified operational, place `WVESXI01` into Maintenance Mode and disconnect/remove it from `WVVCENTER01`.
 
@@ -205,8 +208,15 @@ Virtual machines migrating from `WVESXI03`:
 - Unregister the VMs from the source vCenter.
 - Register VMs in `DEVVCENTER01` on the Vancouver cluster.
 - Storage vMotion VM disks from `INF-NFS-2` to target SAN datastores.
+  - *Note:* The VAN SAN maintains daily snapshots; monitor snapshot reserve capacity as new VM data is committed.
 - Power on VMs, verify network port group / VLAN bindings, and validate system functionality.
 - Once all VMs are verified operational, place `WVESXI03` into Maintenance Mode and disconnect/remove it from `WVVCENTER01`.
+
+##### 3. Decommission & Delete INF-NFS-2 Staging Server
+- Confirm all migrated VM storage has been transferred off `INF-NFS-2` onto target SAN datastores.
+- Unmount the `INF-NFS-2` datastore from all source and destination ESXi hosts.
+- Power off and delete the `INF-NFS-2` virtual machine from disk in vSphere.
+- Remove the temporary DNS A record for `INF-NFS-2`.
 
 ### Phase 4: Backup & Data Protection (Veeam & Airflow Integration)
 Update Airflow PowerShell backup scripts and Veeam repositories to protect all migrated virtual machines in Vancouver.
@@ -241,6 +251,11 @@ Update Airflow PowerShell backup scripts and Veeam repositories to protect all m
 ### Phase 5: Decommissioning & Cleanup
 Decommission and wipe legacy BCP hardware once Vancouver services are verified.
 
+> [!IMPORTANT]
+> **Decommissioning Prerequisites:**
+> - **BCP Workstation Replacement:** BCP hardware cannot be decommissioned until a replacement solution for the BCP workstations is in place at another location.
+> - **Nightly BCP Restored VMs:** Decommissioning cannot proceed until VMs backed up and restored nightly to BCP have either been moved to ISM or designated as no longer essential.
+
 #### Hardware Decommissioning
 - **Servers & Storage:**
   - Power down and unrack legacy hosts: `WVESXI01`, `WVESXI03`, and `WVBACKUP01`.
@@ -255,7 +270,4 @@ Decommission and wipe legacy BCP hardware once Vancouver services are verified.
   - Pack all servers, network gear, power equipment, and mounting rails for return, lease return, or e-waste recycling.
 
 ### NOTES FOR ME TO RESOVLE IN THIS DOC:
-- **BCP Shutdown:** BCP shutdown requires all essential VMs (currently without backups) to be moved or designated as non-essential.
-- **Daily Delta:** Daily delta replication volume could be a problem.
-- **NFS Server:** NFS server will need to shrink after migration, so clone it first.
 - **Blockers:** Identify dependencies and what operations cannot proceed while a VM solution is not present.
