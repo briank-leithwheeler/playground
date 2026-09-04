@@ -106,6 +106,7 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 - **Virtual Machine Inventory (BCP Migration):** Perform cold migrations in vCenter for target BCP VMs off `WVESXI02` to `WVESXI01` or `WVESXI03` via scheduled shutdowns.
 - **Virtual Machine Inventory (VAN Migration):** Perform cold migrations using NFS via `INF-NFS-2` for the target VAN VMs off `WVESXI02` to active Vancouver hosts via scheduled shutdowns.
 - **WVESXI02 Maintenance Mode Entry:** Verify all VMs are running on target hosts without error, then place `WVESXI02` into vSphere Maintenance Mode.
+- **vCenter Removal:** Disconnect and remove `WVESXI02` from `WVVCENTER01`.
 
 ##### 3. Physical Relocation (WVESXI02)
 - Gracefully shut down `WVESXI02`.
@@ -125,8 +126,7 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 - Upgrade `DEVVCENTER01` to vSphere version 8 to match the version of `VANVCENTER01`.
 - Verify vCenter appliance health and service operational status post-upgrade.
 
-##### 7. ESXi Upgrade & Cluster Join (VANESXI04)
-- Add `VANESXI04` into the VAN vSphere cluster.
+##### 7. ESXi Upgrade (VANESXI04)
 - Upgrade hypervisor on `VANESXI04` to the designated target ESXi standard version.
 - Exit Maintenance Mode on `VANESXI04`.
 - Perform post-upgrade health checks, verify vSphere HA/DRS cluster status, and restore host cluster services.
@@ -134,10 +134,16 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 ### Phase 3: vCenter Management Replacement
 Modernize the management plane by deploying a new vCenter Server Appliance.
 
-#### vCenter Deployment (`VANVCENTER02`)
+#### Implementation Steps
+
+##### vCenter Deployment (`VANVCENTER02`)
 - Deploy and configure a clean vCenter Server Appliance (VCSA) instance: `VANVCENTER02`.
 - Configure Single Sign-On (SSO) domain integration, licensing, roles, and access controls.
 - Register upgraded and relocated ESXi hosts under the management of `VANVCENTER02`.
+
+
+
+
 
 ### Phase 4: Additional Host Virtual Machine Migrations
 With the upgraded host infrastructure and target management plane operational, relocate remaining BCP virtual machines.
