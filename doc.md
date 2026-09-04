@@ -111,9 +111,9 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 - Gracefully shut down `WVESXI02`.
 - Unrack, label all network/fiber cabling, and securely pack the server.
 - Transport hardware from the BCP facility to the Vancouver (VAN) server room.
-- Rack host in the designated enclosure and reconnect redundant power, and network cables.
+- Rack host in the designated enclosure and reconnect redundant power, network cables, and KVM.
 
-##### 4. Re-IP & Host Renaming (WVESXI02 → VANESXI04)
+##### 4. Re-IP & Host Renaming (VANESXI04)
 - Update out-of-band management (iLO/iDRAC) and host management IP configurations to match the VAN datacenter network subnets.
 - Update DNS records (forward A and reverse PTR) for `VANESXI04`.
 - Update the hostname and FQDN on the ESXi host via DCUI / Host Client (`esxcli system hostname set --host=VANESXI04`).
