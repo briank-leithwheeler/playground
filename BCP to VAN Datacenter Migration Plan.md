@@ -52,7 +52,7 @@ This phase covers migrating VMs off `WVESXI02` (moving Vancouver-bound VMs to Va
 
 #### Virtual Machine Inventory (VAN Migration)
 Virtual machines migrating from `WVESXI02` to the Vancouver cluster:
-| Name | NumCpu | MemoryGB | ProvisionedDiskGB |
+| Name | Num Cpu | Mem GB | Disk GB |
 | :--- | ---: | ---: | ---: |
 | `explw-db01` | 12 | 32 | 1,702.49 |
 | `explz-db01` | 8 | 32 | 2,302.10 |
@@ -72,7 +72,7 @@ Virtual machines migrating from `WVESXI02` to the Vancouver cluster:
 
 #### Virtual Machine Inventory (BCP Migration)
 Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
-| Name | NumCpu | MemoryGB | ProvisionedDiskGB |
+| Name | Num Cpu | Mem GB | Disk GB |
 | :--- | ---: | ---: | ---: |
 | `ftd-bcp` | 4 | 28 | 278.96 |
 | `tem-cgy-win2025` | 4 | 8 | 73.45 |
@@ -157,7 +157,7 @@ With `VANESXI04` online in Vancouver, relocate the remaining BCP virtual machine
 
 #### Virtual Machine Inventory (VAN Migration)
 Virtual machines migrating from `WVESXI01`:
-| Name | NumCpu | MemoryGB | ProvisionedDiskGB |
+| Name | Num Cpu | Mem GB | Disk GB |
 | :--- | ---: | ---: | ---: |
 | `testapx-app01` | 12 | 28 | 163.94 |
 | `testapx-app11` | 12 | 28 | 188.11 |
@@ -172,7 +172,7 @@ Virtual machines migrating from `WVESXI01`:
 | **TOTAL** | **106 vCPU** | **456 GB** | **~7,434 GB (~7.26 TB)** |
 
 Virtual machines migrating from `WVESXI03`:
-| Name | NumCpu | MemoryGB | ProvisionedDiskGB |
+| Name | Num Cpu | Mem GB | Disk GB |
 | :--- | ---: | ---: | ---: |
 | `devapx-app11` | 12 | 28 | 188.38 |
 | `devapx-db11` | 16 | 62 | 1,382.38 |
