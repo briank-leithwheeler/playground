@@ -1,10 +1,10 @@
 # BCP to VAN Datacenter Migration Plan
 ## Executive Summary
-This document outlines the technical migration plan for relocating infrastructure and virtual machines from the legacy Business Continuity Planning (BCP) environment to the Vancouver (VAN) environment. The primary objectives are to consolidate server hardware, optimize storage architecture, and minimize service disruption throughout the transition.
+This document details the migration plan for relocating virtual machines and server hardware from the BCP datacenter to the Vancouver (VAN) datacenter. Primary goals: consolidate VMware storage onto three 9 TB LUNs, relocate and upgrade `WVESXI02` to `VANESXI04`, and move VMs without unplanned service downtime.
 ### Phase 1: Storage Preparation (VAN SAN)
 Consolidate existing VMware storage onto three 9 TB SAN LUNs (`SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`) to simplify datastore management and eliminate the need to migrate large-capacity VMs between smaller datastores. Once all VM storage has been migrated to the three datastores, the empty datastores are unmounted and decommissioned, and the three remaining LUNs will be expanded to 9 TB each.
 #### Storage Inventory
-The existing VMware storage footprint consists of six LUNs/datastores:
+Existing datastores (6):
 - `SAN-Prod-Vms-01`
 - `SAN-Prod-Vms-02`
 - `SAN-Prod-Vms-03`
@@ -45,11 +45,11 @@ Rescan storage on all ESXi hosts.
 Expand the VMFS datastore in vCenter to consume the newly added capacity.
 Verify datastore capacity reports approximately 9 TB in both vCenter and the SAN management interface.
 
-### Phase 2: Host Relocation, & Hardware Upgrade (WVESXI02)
-This phase covers the migration of virtual machines from `WVESXI02` in the BCP facility (migrating target virtual machines to the VAN environment and remaining virtual machines to `WVESXI01` or `WVESXI03`), followed by physical relocation, firmware updates, ESXi hypervisor upgrades, switch configuration, host network configuration, and host renaming from `WVESXI02` to `VANESXI04`.
+### Phase 2: Host Relocation & Hardware Upgrade (WVESXI02)
+This phase covers evacuating VMs from `WVESXI02` (migrating Vancouver-bound VMs to Vancouver and local VMs to `WVESXI01` or `WVESXI03`), followed by physically moving the server to Vancouver, updating firmware, upgrading ESXi, and renaming the host to `VANESXI04`.
 
 #### Virtual Machine Inventory (VAN Migration)
-The following virtual machines currently hosted on `WVESXI02` will be migrated to active host servers in the Vancouver (VAN) datacenter cluster across the target ESXi hosts and target datastores:
+Virtual machines migrating from `WVESXI02` to the Vancouver cluster:
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
 | :--- | ---: | ---: | ---: |
 | `explw-db01` | 12 | 32 | 1,702.49 |
@@ -66,7 +66,7 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 | **TOTAL** | **104 vCPU** | **442 GB** | **~10,058 GB (~10.05 TB)** |
 
 #### Virtual Machine Inventory (BCP Migration)
-The following virtual machines currently hosted on `WVESXI02` will be migrated to `WVESXI01` or `WVESXI03`:
+Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
 | :--- | ---: | ---: | ---: |
 | `ftd-bcp` | 8 | 28 | 278.96 |
@@ -109,9 +109,9 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 - **Storage Expansion:** Expand vMDDK to 3 TB in vSphere, rescan the SCSI bus (`/sys/class/block/sdX/device/rescan`), and grow the PV/LV/filesystem (`pvresize`, `lvextend`, and `xfs_growfs` or `resize2fs`).
 
 ##### 2. VM Evacuation (WVESXI02)
-- **Virtual Machine Inventory (BCP Migration):** Perform cold migrations in vCenter for target BCP VMs off `WVESXI02` to `WVESXI01` or `WVESXI03` via scheduled shutdowns.
-- **Virtual Machine Inventory (VAN Migration):** Perform cold migrations using NFS via `INF-NFS-2` for the target VAN VMs off `WVESXI02` to active Vancouver hosts via scheduled shutdowns.
-- **WVESXI02 Maintenance Mode Entry:** Verify all VMs are running on target hosts without error, then place `WVESXI02` into vSphere Maintenance Mode.
+- **BCP VM Migrations:** Perform cold migrations in vCenter for BCP VMs off `WVESXI02` to `WVESXI01` or `WVESXI03` via scheduled shutdowns.
+- **VAN VM Migrations:** Perform cold migrations using NFS via `INF-NFS-2` for Vancouver-bound VMs off `WVESXI02` to active Vancouver hosts via scheduled shutdowns.
+- **Maintenance Mode Entry:** Verify all VMs are running on target hosts without error, then place `WVESXI02` into vSphere Maintenance Mode.
 - **vCenter Removal:** Disconnect and remove `WVESXI02` from `WVVCENTER01`.
 
 ##### 3. Physical Relocation (WVESXI02)
@@ -137,55 +137,46 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 - Add `VANESXI04` to `DEVVCENTER01`.
 - Exit Maintenance Mode on `VANESXI04`.
 
-
-
-
-
-
-
-
-
-
 ### Phase 3: Additional Host Virtual Machine Migrations
-With the upgraded host infrastructure, relocate remaining BCP virtual machines.
+With `VANESXI04` online in Vancouver, relocate the remaining BCP virtual machines.
 
 #### Virtual Machine Inventory (VAN Migration)
-The following virtual machines currently hosted on `WVESXI01` and `WVESXI03` will be migrated to `VANESXI04`:
+Virtual machines migrating from `WVESXI01` and `WVESXI03` to `VANESXI04`:
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
 | :--- | ---: | ---: | ---: |
 | `testapx-app11` | 4 | 24 | 188.1 |
 | `testapx-db11` | 8 | 32 | 1382.4 |
-| **TOTAL** | **36 vCPU** | **162 GB** | **~5,100 GB (~5.00 TB)** |
+| **TOTAL** | **12 vCPU** | **56 GB** | **~1,571 GB (~1.57 TB)** |
 
-- **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into `VANESXI04` via NFS
-- **VM Migration (`WVESXI03`):** Migrate active VMs from `WVESXI03` into `VANESXI04` via NFS
+- **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into `VANESXI04` via NFS.
+- **VM Migration (`WVESXI03`):** Migrate active VMs from `WVESXI03` into `VANESXI04` via NFS.
 
 ### Phase 4: Workstation Relocation
 - **Action Item:** Identify target office desks or staging areas within the Vancouver facility for physical workstations currently deployed at the BCP site.
 - **Status:** Pending Location Confirmation
 
 ### Phase 5: Backup & Data Protection (Veeam Integration)
-Re-establish backup pipelines and data protection post-migration.
+Reconfigure Veeam backups post-migration.
 
 #### Veeam Infrastructure Configuration
-- Install and configure Veeam Backup & Replication components on `BACKUP02` to function as a dedicated backup proxy and repository.
+- Install and configure Veeam Backup & Replication components on `BACKUP02` to act as a dedicated backup proxy and repository.
 - Update Veeam backup jobs to discover and protect virtual machines via the upgraded `DEVVCENTER01` vCenter instance.
-- Execute active full backup jobs across all jobs to establish new recovery point baselines.
+- Run active full backup jobs across all workloads to start new backup chains.
 
 ### Phase 6: Decommissioning & Cleanup
-Once all services are validated and operational within the VAN datacenter, gracefully retire legacy gear.
+Decommission and wipe legacy BCP hardware once Vancouver services are verified.
 
 #### Server Decommissioning
-- Gracefully power down and unrack legacy hosts:
+- Power down and unrack legacy hosts:
   - `WVESXI01`
   - `WVESXI03`
   - `WVBACKUP01`
-- Perform NIST-compliant data sanitization/wiping on all physical drives.
-- Logistics prep for hardware return, asset disposition, or e-waste recycling.
+- Securely wipe all physical drives.
+- Pack hardware for return, lease return, or e-waste recycling.
 
 #### VAN Server Room Cleanup
-- Dress, bundle, and route cabling cleanly in cable trays (overhead and under-floor).
-- Dispose of packaging, palleting materials, transit hardware, and trash from the server room floor.
+- Route and tie down cabling in overhead and under-floor trays.
+- Clear boxes, pallet wrap, transit hardware, and trash from the server room floor.
 
 ### Considerations & Potential Blockers
 - **Veeam Upgrade:** Install Veeam with upgrade.
