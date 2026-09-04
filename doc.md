@@ -141,46 +141,41 @@ VM Migration (`WVESXI03`): Migrate active VMs from `WVESXI03` into the consolida
 Phase 6: Workstation Relocation
 Action Item: Identify target office desks or staging areas within the Vancouver facility for physical workstations currently deployed at the BCP site.
 Status: Pending Location Confirmation
-Phase 7: Backup & Data Protection (Veeam Integration)
+### Phase 7: Backup & Data Protection (Veeam Integration)
 Re-establish backup pipelines and data protection post-migration.
-Veeam Infrastructure Configuration:
-Install and configure Veeam Backup & Replication components on `BACKUP02` to function as a dedicated backup proxy and repository.
-Update Veeam backup jobs to discover and protect workloads via the new `VANVCENTER02` vCenter instance.
-Execute active full backup jobs across all jobs to establish new recovery point baselines.
-Phase 8: Datacenter Environmental Optimization
-Airflow Management:
-Evaluate server room thermal dynamics following hardware additions.
-Install blanking panels in all vacant rack U-spaces to prevent hot-air recirculation.
-Verify cold aisle containment and hot aisle isolation integrity across all racks.
-Phase 9: Decommissioning & Cleanup
+
+#### Veeam Infrastructure Configuration
+- Install and configure Veeam Backup & Replication components on `BACKUP02` to function as a dedicated backup proxy and repository.
+- Update Veeam backup jobs to discover and protect workloads via the new `VANVCENTER02` vCenter instance.
+- Execute active full backup jobs across all jobs to establish new recovery point baselines.
+
+### Phase 8: Datacenter Environmental Optimization
+
+#### Airflow Management
+- Evaluate server room thermal dynamics following hardware additions.
+- Install blanking panels in all vacant rack U-spaces to prevent hot-air recirculation.
+- Verify cold aisle containment and hot aisle isolation integrity across all racks.
+
+### Phase 9: Decommissioning & Cleanup
 Once all services are validated and operational within the VAN datacenter, gracefully retire legacy gear.
-Server Decommissioning:
-Gracefully power down and unrack legacy hosts:
-`DEVESXI04`
-`WVESXI01`
-`WVESXI03`
-`WVBACKUP01`
-Perform NIST-compliant data sanitization/wiping on all physical drives.
-Logistics prep for hardware return, asset disposition, or e-waste recycling.
-VAN Server Room Cleanup:
-Dress, bundle, and route cabling cleanly in cable trays (overhead and under-floor).
-Dispose of packaging, palleting materials, transit hardware, and trash from the server room floor.
 
+#### Server Decommissioning
+- Gracefully power down and unrack legacy hosts:
+  - `DEVESXI04`
+  - `WVESXI01`
+  - `WVESXI03`
+  - `WVBACKUP01`
+- Perform NIST-compliant data sanitization/wiping on all physical drives.
+- Logistics prep for hardware return, asset disposition, or e-waste recycling.
 
+#### VAN Server Room Cleanup
+- Dress, bundle, and route cabling cleanly in cable trays (overhead and under-floor).
+- Dispose of packaging, palleting materials, transit hardware, and trash from the server room floor.
 
-
-
-
-
-install veeam with upgrade
-
-bcp shutdown needs all essential VMS 9without backup nows) to mbe moved or makde non essential
-
-daily delta could be a porblem
-
-NFS server shrink after so clone it first
-
-
-tape backups impact?
-
-blocks - what can't be done while a VM solution is not present
+### Considerations & Potential Blockers
+- **Veeam Upgrade:** Install Veeam with upgrade.
+- **BCP Shutdown:** BCP shutdown requires all essential VMs (currently without backups) to be moved or designated as non-essential.
+- **Daily Delta:** Daily delta replication volume could be a problem.
+- **NFS Server:** NFS server will need to shrink after migration, so clone it first.
+- **Tape Backups:** Evaluate impact on tape backups.
+- **Blockers:** Identify dependencies and what operations cannot proceed while a VM solution is not present.
