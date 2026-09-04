@@ -94,9 +94,9 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 | **TOTAL** | **36 vCPU** | **162 GB** | **~5,100 GB (~5.00 TB)** |
 #### Implementation Steps
 
-##### 1. NFS Server Provisioning & Preparation (INF-NFS-1 → INF-NFS-2)
+##### 1. NFS Server Provisioning & Preparation (INF-NFS-2)
 - **VM Cloning:** Clone VM `INF-NFS-1` to create `INF-NFS-2` in vSphere/vCenter to preserve the original NFS instance.
-- **Hostname & DNS:** Update internal hostname configuration on `INF-NFS-2` (`/etc/hostname` and `/etc/hosts`), assign static IP, and create a DNS A record.
+- **Hostname & DNS:** Update hostname configuration on `INF-NFS-2` (`/etc/hostname` and `/etc/hosts`), assign static IP, and create a DNS A record.
 - **Thread Scale:** Set `RPCNFSDCOUNT=64` in `/etc/default/nfs-kernel-server` and restart `nfs-kernel-server`.
 - **Export Tuning:** Update `/etc/exports` with `async` (and `no_wdelay`) options for active ESXi mounts, then apply via `exportfs -ra`.
 - **vCPU Allocation:** Adjust VM allocation to 12 vCPUs in vSphere on `INF-NFS-2`.
