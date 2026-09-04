@@ -161,3 +161,22 @@ Logistics prep for hardware return, asset disposition, or e-waste recycling.
 VAN Server Room Cleanup:
 Dress, bundle, and route cabling cleanly in cable trays (overhead and under-floor).
 Dispose of packaging, palleting materials, transit hardware, and trash from the server room floor.
+
+
+
+
+
+
+
+install veeam with upgrade
+
+bcp shutdown needs all essential VMS 9without backup nows) to mbe moved or makde non essential
+
+daily delta could be a porblem
+
+NFS server shrink after so clone it first
+
+
+tape backups impact?
+
+blocks - what can't be done while a VM solution is not present
