@@ -54,49 +54,49 @@ Virtual machines migrating from `WVESXI02` to the Vancouver cluster:
 | :--- | ---: | ---: | ---: |
 | `explw-db01` | 12 | 32 | 1,702.49 |
 | `explz-db01` | 8 | 32 | 2,302.10 |
-| `uatapx-app11` | 12 | 28 | 188.19 |
-| `uatapx-db11` | 16 | 62 | 1,382.34 |
-| `uatlw-app01` | 10 | 16 | 106.97 |
-| `uatlw-app02` | 6 | 20 | 105.99 |
-| `uatlw-app03` | 6 | 12 | 77.58 |
-| `uatlw-db01` | 12 | 96 | 1,766.87 |
-| `uatlw-int02` | 8 | 24 | 89.36 |
-| `uatlz-app01` | 6 | 24 | 119.98 |
-| `uatlz-db01` | 8 | 96 | 2,216.99 |
-| **TOTAL** | **104 vCPU** | **442 GB** | **~10,058 GB (~10.05 TB)** |
+| `uatapx-app11` | 12 | 28 | 188.21 |
+| `uatapx-db11` | 16 | 62 | 1,382.37 |
+| `uatlw-app01` | 10 | 16 | 106.99 |
+| `uatlw-app02` | 6 | 20 | 106.00 |
+| `uatlw-app03` | 6 | 12 | 77.60 |
+| `uatlw-db01` | 12 | 96 | 1,766.89 |
+| `uatlw-int02` | 8 | 24 | 89.38 |
+| `uatlz-app01` | 6 | 24 | 120.00 |
+| `uatlz-db01` | 8 | 96 | 2,217.01 |
+| **TOTAL** | **104 vCPU** | **442 GB** | **~10,059 GB (~9.82 TB)** |
 
 #### Virtual Machine Inventory (BCP Migration)
 Virtual machines migrating from `WVESXI02` to `WVESXI01` or `WVESXI03`:
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
 | :--- | ---: | ---: | ---: |
-| `ftd-bcp` | 8 | 28 | 278.96 |
-| `tem-cgy-win2025` | 2 | 8 | 73.45 |
-| `w11vm001` | 4 | 16 | 116.47 |
-| `w11vm002` | 4 | 16 | 116.47 |
-| `w11vm003` | 4 | 10 | 116.51 |
+| `ftd-bcp` | 4 | 28 | 278.96 |
+| `tem-cgy-win2025` | 4 | 8 | 73.45 |
+| `w11vm001` | 8 | 16 | 116.47 |
+| `w11vm002` | 8 | 16 | 116.47 |
+| `w11vm003` | 8 | 16 | 116.51 |
 | `wvdc01` | 2 | 8 | 68.97 |
-| `wvvcenter01` | 4 | 20 | 720.15 |
-| `bcpvm-011` | 0 | 0 | 116.22 |
-| `bcpvm-012` | 0 | 0 | 116.22 |
-| `bcpvm-013` | 0 | 0 | 116.22 |
-| `bcpvm-014` | 0 | 0 | 116.22 |
-| `bcpvm-015` | 0 | 0 | 116.22 |
-| `bcpvm-016` | 0 | 0 | 116.22 |
-| `bcpvm-017` | 0 | 0 | 116.22 |
-| `bcpvm-018` | 0 | 0 | 116.22 |
-| `bcpvm-019` | 0 | 0 | 116.22 |
-| `bcpvm-020` | 0 | 0 | 116.22 |
-| `bcpvm-021` | 0 | 0 | 116.22 |
-| `bcpvm-022` | 0 | 0 | 116.22 |
-| `bcpvm-023` | 0 | 0 | 116.22 |
-| `bcpvm-024` | 0 | 0 | 116.22 |
-| `bcpvm-025` | 0 | 0 | 116.22 |
-| `bcpvm-026` | 0 | 0 | 116.22 |
-| `bcpvm-027` | 0 | 0 | 116.22 |
-| `bcpvm-028` | 0 | 0 | 116.22 |
-| `bcpvm-029` | 0 | 0 | 116.22 |
-| `bcpvm-030` | 0 | 0 | 116.22 |
-| **TOTAL** | **36 vCPU** | **162 GB** | **~5,100 GB (~5.00 TB)** |
+| `wvvcenter01` | 4 | 19 | 720.15 |
+| `bcpvm-011` | 8 | 16 | 116.22 |
+| `bcpvm-012` | 8 | 16 | 116.22 |
+| `bcpvm-013` | 8 | 16 | 116.22 |
+| `bcpvm-014` | 8 | 16 | 116.22 |
+| `bcpvm-015` | 8 | 16 | 116.22 |
+| `bcpvm-016` | 8 | 16 | 116.22 |
+| `bcpvm-017` | 8 | 16 | 116.22 |
+| `bcpvm-018` | 8 | 16 | 116.22 |
+| `bcpvm-019` | 8 | 16 | 116.22 |
+| `bcpvm-020` | 8 | 16 | 116.22 |
+| `bcpvm-021` | 8 | 16 | 116.22 |
+| `bcpvm-022` | 8 | 16 | 116.22 |
+| `bcpvm-023` | 8 | 16 | 116.22 |
+| `bcpvm-024` | 8 | 16 | 116.22 |
+| `bcpvm-025` | 8 | 16 | 116.22 |
+| `bcpvm-026` | 8 | 16 | 116.22 |
+| `bcpvm-027` | 8 | 16 | 116.22 |
+| `bcpvm-028` | 8 | 16 | 116.22 |
+| `bcpvm-029` | 8 | 16 | 116.22 |
+| `bcpvm-030` | 8 | 16 | 116.22 |
+| **TOTAL** | **198 vCPU** | **431 GB** | **~3,815 GB (~3.73 TB)** |
 
 #### Implementation Steps
 
@@ -144,35 +144,35 @@ With `VANESXI04` online in Vancouver, relocate the remaining BCP virtual machine
 Virtual machines migrating from `WVESXI01`:
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
 | :--- | ---: | ---: | ---: |
-| `testapx-app01` | - | 28 | 163.94 |
-| `testapx-app11` | 4 | 24 | 188.11 |
-| `testapx-db01` | - | 36 | 1,290.24 |
-| `testapx-db11` | 8 | 32 | 1,382.40 |
-| `testlw-app01` | - | 16 | 106.73 |
-| `testlw-app02` | - | 20 | 106.22 |
-| `testlw-db01` | - | 96 | 1,771.52 |
-| `testlw-int02` | - | 24 | 89.48 |
-| `testlz-app01` | - | 24 | 120.10 |
-| `testlz-db01` | - | 18 | 2,222.08 |
-| **TOTAL** | - | **318 GB** | **~7,441 GB (~7.27 TB)** |
+| `testapx-app01` | 12 | 28 | 163.94 |
+| `testapx-app11` | 12 | 28 | 188.11 |
+| `testapx-db01` | 16 | 62 | 1,292.89 |
+| `testapx-db11` | 16 | 62 | 1,382.12 |
+| `testlw-app01` | 10 | 16 | 106.73 |
+| `testlw-app02` | 6 | 20 | 106.22 |
+| `testlw-db01` | 12 | 96 | 1,767.15 |
+| `testlw-int02` | 8 | 24 | 89.48 |
+| `testlz-app01` | 6 | 24 | 120.10 |
+| `testlz-db01` | 8 | 96 | 2,217.10 |
+| **TOTAL** | **106 vCPU** | **456 GB** | **~7,434 GB (~7.26 TB)** |
 
 Virtual machines migrating from `WVESXI03`:
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
 | :--- | ---: | ---: | ---: |
-| `devapx-app11` | - | 28 | 188.38 |
-| `devapx-db11` | - | 46 | 1,382.40 |
-| `devlw-app01` | - | 13 | 107.21 |
-| `devlw-app02` | - | 13 | 106.20 |
-| `devlw-db01` | - | 21 | 1,771.52 |
-| `devlw-int02` | - | 22 | 89.45 |
-| `devlz-app01` | - | 8 | 120.20 |
-| `devlz-db01` | - | 13 | 2,222.08 |
-| `venapx-db11` | - | 32 | 1,351.68 |
-| `venlw-db01` | - | 19 | 1,699.84 |
-| `venlz-db01` | - | 11 | 2,150.40 |
-| **TOTAL** | - | **226 GB** | **~11,189 GB (~10.93 TB)** |
+| `devapx-app11` | 12 | 28 | 188.38 |
+| `devapx-db11` | 16 | 62 | 1,382.38 |
+| `devlw-app01` | 10 | 16 | 107.21 |
+| `devlw-app02` | 6 | 20 | 106.20 |
+| `devlw-db01` | 12 | 96 | 1,767.10 |
+| `devlw-int02` | 8 | 24 | 89.45 |
+| `devlz-app01` | 6 | 24 | 120.20 |
+| `devlz-db01` | 8 | 96 | 2,217.12 |
+| `venapx-db11` | 16 | 32 | 1,352.09 |
+| `venlw-db01` | 12 | 32 | 1,702.09 |
+| `venlz-db01` | 8 | 32 | 2,152.09 |
+| **TOTAL** | **114 vCPU** | **462 GB** | **~11,184 GB (~10.92 TB)** |
 
-- **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into the Vancovuer cluster via NFS.
+- **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into the Vancouver cluster via NFS.
 - **VM Migration (`WVESXI03`):** Migrate active VMs from `WVESXI03` into `VANESXI04` via NFS.
 
 ### Phase 4: Workstation Relocation
