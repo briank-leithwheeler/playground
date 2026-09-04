@@ -2,7 +2,7 @@
 ## Executive Summary
 This document outlines the technical migration plan for relocating infrastructure and workloads from the legacy Business Continuity Planning (BCP) environment to the Vancouver (VAN) environment. The primary objectives are to consolidate server hardware, optimize storage architecture, and minimize service disruption throughout the transition.
 ### Phase 1: Storage Preparation (VAN SAN)
-Consolidate existing VMware storage onto three 9 TB SAN LUNs (`SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`) to simplify datastore management and eliminate the need to migrate large-capacity VMs between smaller datastores. Once all VM storage has been migrated and the remaining three datastores are unmounted and decommissioned, the remaining LUNs will be expanded to 9 TB each.
+Consolidate existing VMware storage onto three 9 TB SAN LUNs (`SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`) to simplify datastore management and eliminate the need to migrate large-capacity VMs between smaller datastores. Once all VM storage has been migrated to the three datastores, the empty datastores are unmounted and decommissioned, and the three remaining LUNs will be expanded to 9 TB each.
 #### Storage Inventory
 The existing VMware storage footprint consists of six LUNs/datastores:
 - `SAN-Prod-Vms-01`
