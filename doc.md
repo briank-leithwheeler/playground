@@ -44,54 +44,58 @@ Verify datastore capacity reports approximately 9 TB in both vCenter and the SAN
 
 #### Phase 2: Host Relocation, & Hardware Upgrade (WVESXI02)
 This phase covers the migration of VMs from `WVESXI02` in the BCP facility (migrating target workloads to the VAN environment and remaining local workloads to `WVESXI01`), followed by physical relocation, firmware updates, ESXi hypervisor upgrades, switch configuration, host network configuration, and host renaming from `WVESXI02` to `VANESXI04`.
-Virtual Machine Inventory (VAN Migration)
+##### Virtual Machine Inventory (VAN Migration)
 The following 11 active workloads currently hosted on `WVESXI02` will be migrated to active host servers in the Vancouver (VAN) datacenter cluster across the target ESXi hosts and target datastores:
-Name	NumCpu	MemoryGB	ProvisionedDiskGB
-explw-db01	12	32	1,702.49
-explz-db01	8	32	2,302.10
-uatapx-app11	12	28	188.19
-uatapx-db11	16	62	1,382.34
-uatlw-app01	10	16	106.97
-uatlw-app02	6	20	105.99
-uatlw-app03	6	12	77.58
-uatlw-db01	12	96	1,766.87
-uatlw-int02	8	24	89.36
-uatlz-app01	6	24	119.98
-uatlz-db01	8	96	2,216.99
-TOTAL	104 vCPU	442 GB	~10,058 GB (~10.05 TB)
-Virtual Machine Inventory (BCP Migration)
+| Name | NumCpu | MemoryGB | ProvisionedDiskGB |
+| :--- | ---: | ---: | ---: |
+| `explw-db01` | 12 | 32 | 1,702.49 |
+| `explz-db01` | 8 | 32 | 2,302.10 |
+| `uatapx-app11` | 12 | 28 | 188.19 |
+| `uatapx-db11` | 16 | 62 | 1,382.34 |
+| `uatlw-app01` | 10 | 16 | 106.97 |
+| `uatlw-app02` | 6 | 20 | 105.99 |
+| `uatlw-app03` | 6 | 12 | 77.58 |
+| `uatlw-db01` | 12 | 96 | 1,766.87 |
+| `uatlw-int02` | 8 | 24 | 89.36 |
+| `uatlz-app01` | 6 | 24 | 119.98 |
+| `uatlz-db01` | 8 | 96 | 2,216.99 |
+| **TOTAL** | **104 vCPU** | **442 GB** | **~10,058 GB (~10.05 TB)** |
+
+##### Virtual Machine Inventory (BCP Migration)
 The following 9 active workloads currently hosted on `WVESXI02` will be migrated to `WVESXI01` or `WVESXI03`:
-Name	NumCpu	MemoryGB	ProvisionedDiskGB
-ftd-bcp	8	28	278.96
-tem-cgy-win2025	2	8	73.45
-testapx-app11	4	24	188.1
-testapx-db11	8	32	1382.4
-w11vm001	4	16	116.47
-w11vm002	4	16	116.47
-w11vm003	4	10	116.51
-wvdc01	2	8	68.97
-wvvcenter01	4	20	720.15
-bcpvm-011	0	0	116.22
-bcpvm-012	0	0	116.22
-bcpvm-013	0	0	116.22
-bcpvm-014	0	0	116.22
-bcpvm-015	0	0	116.22
-bcpvm-016	0	0	116.22
-bcpvm-017	0	0	116.22
-bcpvm-018	0	0	116.22
-bcpvm-019	0	0	116.22
-bcpvm-020	0	0	116.22
-bcpvm-021	0	0	116.22
-bcpvm-022	0	0	116.22
-bcpvm-023	0	0	116.22
-bcpvm-024	0	0	116.22
-bcpvm-025	0	0	116.22
-bcpvm-026	0	0	116.22
-bcpvm-027	0	0	116.22
-bcpvm-028	0	0	116.22
-bcpvm-029	0	0	116.22
-bcpvm-030	0	0	116.22
-TOTAL	36 vCPU	162 GB	~5,100 GB (~5.00 TB)
+
+| Name | NumCpu | MemoryGB | ProvisionedDiskGB |
+| :--- | ---: | ---: | ---: |
+| `ftd-bcp` | 8 | 28 | 278.96 |
+| `tem-cgy-win2025` | 2 | 8 | 73.45 |
+| `testapx-app11` | 4 | 24 | 188.1 |
+| `testapx-db11` | 8 | 32 | 1382.4 |
+| `w11vm001` | 4 | 16 | 116.47 |
+| `w11vm002` | 4 | 16 | 116.47 |
+| `w11vm003` | 4 | 10 | 116.51 |
+| `wvdc01` | 2 | 8 | 68.97 |
+| `wvvcenter01` | 4 | 20 | 720.15 |
+| `bcpvm-011` | 0 | 0 | 116.22 |
+| `bcpvm-012` | 0 | 0 | 116.22 |
+| `bcpvm-013` | 0 | 0 | 116.22 |
+| `bcpvm-014` | 0 | 0 | 116.22 |
+| `bcpvm-015` | 0 | 0 | 116.22 |
+| `bcpvm-016` | 0 | 0 | 116.22 |
+| `bcpvm-017` | 0 | 0 | 116.22 |
+| `bcpvm-018` | 0 | 0 | 116.22 |
+| `bcpvm-019` | 0 | 0 | 116.22 |
+| `bcpvm-020` | 0 | 0 | 116.22 |
+| `bcpvm-021` | 0 | 0 | 116.22 |
+| `bcpvm-022` | 0 | 0 | 116.22 |
+| `bcpvm-023` | 0 | 0 | 116.22 |
+| `bcpvm-024` | 0 | 0 | 116.22 |
+| `bcpvm-025` | 0 | 0 | 116.22 |
+| `bcpvm-026` | 0 | 0 | 116.22 |
+| `bcpvm-027` | 0 | 0 | 116.22 |
+| `bcpvm-028` | 0 | 0 | 116.22 |
+| `bcpvm-029` | 0 | 0 | 116.22 |
+| `bcpvm-030` | 0 | 0 | 116.22 |
+| **TOTAL** | **36 vCPU** | **162 GB** | **~5,100 GB (~5.00 TB)** |
 Implementation Steps
 1. NFS Preparation (INF-NFS-1)
 Thread Scale: Set `RPCNFSDCOUNT=64` in `/etc/default/nfs-kernel-server` and restart `nfs-kernel-server`.
