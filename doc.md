@@ -172,8 +172,10 @@ Virtual machines migrating from `WVESXI03`:
 | `venlz-db01` | 8 | 32 | 2,152.09 |
 | **TOTAL** | **114 vCPU** | **462 GB** | **~11,184 GB (~10.92 TB)** |
 
-- **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into the Vancouver cluster via NFS.
-- **VM Migration (`WVESXI03`):** Migrate active VMs from `WVESXI03` into `VANESXI04` via NFS.
+#### Implementation Steps
+
+##### **VM Migration (`WVESXI01`):** Migrate active VMs from `WVESXI01` into the Vancouver cluster via NFS.
+##### **VM Migration (`WVESXI03`):** Migrate active VMs from `WVESXI03` into `VANESXI04` via NFS.
 
 ### Phase 4: Workstation Relocation
 - **Action Item:** Identify target office desks or staging areas within the Vancouver facility for physical workstations currently deployed at the BCP site.
