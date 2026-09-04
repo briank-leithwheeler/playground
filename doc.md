@@ -2,9 +2,6 @@
 ## Executive Summary
 This document details the migration plan for relocating virtual machines and server hardware from the BCP datacenter to the Vancouver (VAN) datacenter. Primary goals: consolidate VMware storage onto three 9 TB LUNs, relocate and upgrade `WVESXI02` to `VANESXI04`, and move VMs without unplanned service downtime.
 
-> [!NOTE]
-> Tape backups will not be affected by this migration—nothing is being added or removed as a result of these changes.
-
 ### Phase 1: Storage Preparation (VAN SAN)
 Consolidate existing VMware storage onto three 9 TB SAN LUNs (`SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`) to simplify datastore management and eliminate the need to migrate large-capacity VMs between smaller datastores. Once all VM storage has been migrated to the three datastores, the empty datastores are unmounted and decommissioned, and the three remaining LUNs will be expanded to 9 TB each.
 #### Storage Inventory
@@ -268,6 +265,3 @@ Decommission and wipe legacy BCP hardware once Vancouver services are verified.
   - Confirm if a dedicated UPS is present; if present, safely power down, disconnect battery packs, and unrack.
 - **Disposition:**
   - Pack all servers, network gear, power equipment, and mounting rails for return, lease return, or e-waste recycling.
-
-### NOTES FOR ME TO RESOVLE IN THIS DOC:
-- **Blockers:** Identify dependencies and what operations cannot proceed while a VM solution is not present.
