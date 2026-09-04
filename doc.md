@@ -121,11 +121,12 @@ The following virtual machines currently hosted on `WVESXI02` will be migrated t
 ##### 5. Firmware & Hardware Patching
 - Apply system updates including motherboard BIOS, out-of-band management (iLO/iDRAC), network controllers, and RAID/HBA firmware.
 
-##### 6. ESXi Upgrade & Cluster Join (VANESXI04)
-- Confirm `VANVCENTER01` compatibility with the target ESXi version.
+##### 6. vCenter Upgrade (DEVVCENTER01)
+- Upgrade `DEVVCENTER01` to vSphere version 8 to match the version of `VANVCENTER01`.
+- Verify vCenter appliance health and service operational status post-upgrade.
+##### 7. ESXi Upgrade & Cluster Join (VANESXI04)
+- Add `VANESXI04` into the VAN vSphere cluster.
 - Upgrade hypervisor on `VANESXI04` to the designated target ESXi standard version.
-- Verify SAN HBA storage paths and network vSwitches/VLAN connectivity.
-- Add/re-register `VANESXI04` into the VAN vSphere cluster.
 - Exit Maintenance Mode on `VANESXI04`.
 - Perform post-upgrade health checks, verify vSphere HA/DRS cluster status, and restore host cluster services.
 
