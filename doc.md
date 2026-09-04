@@ -1,6 +1,6 @@
 # BCP to VAN Datacenter Migration Plan
 ## Executive Summary
-This document outlines the technical migration plan for relocating infrastructure and workloads from the legacy Business Continuity Planning (BCP) environment to the Vancouver (VAN) environment. The primary objectives are to consolidate server hardware, optimize storage architecture, and minimize service disruption throughout the transition.
+This document outlines the technical migration plan for relocating infrastructure and virtual machines from the legacy Business Continuity Planning (BCP) environment to the Vancouver (VAN) environment. The primary objectives are to consolidate server hardware, optimize storage architecture, and minimize service disruption throughout the transition.
 ### Phase 1: Storage Preparation (VAN SAN)
 Consolidate existing VMware storage onto three 9 TB SAN LUNs (`SAN-Prod-Vms-01`, `SAN-Prod-Vms-02`, and `SAN-Prod-Vms-03`) to simplify datastore management and eliminate the need to migrate large-capacity VMs between smaller datastores. Once all VM storage has been migrated to the three datastores, the empty datastores are unmounted and decommissioned, and the three remaining LUNs will be expanded to 9 TB each.
 #### Storage Inventory
@@ -43,9 +43,9 @@ Verify datastore capacity reports approximately 9 TB in both vCenter and the SAN
 
 
 #### Phase 2: Host Relocation, & Hardware Upgrade (WVESXI02)
-This phase covers the migration of VMs from `WVESXI02` in the BCP facility (migrating target workloads to the VAN environment and remaining workloads to `WVESXI01` or `WVESXI03`), followed by physical relocation, firmware updates, ESXi hypervisor upgrades, switch configuration, host network configuration, and host renaming from `WVESXI02` to `VANESXI04`.
+This phase covers the migration of virtual machines from `WVESXI02` in the BCP facility (migrating target virtual machines to the VAN environment and remaining virtual machines to `WVESXI01` or `WVESXI03`), followed by physical relocation, firmware updates, ESXi hypervisor upgrades, switch configuration, host network configuration, and host renaming from `WVESXI02` to `VANESXI04`.
 ##### Virtual Machine Inventory (VAN Migration)
-The following 11 active workloads currently hosted on `WVESXI02` will be migrated to active host servers in the Vancouver (VAN) datacenter cluster across the target ESXi hosts and target datastores:
+The following virtual machines currently hosted on `WVESXI02` will be migrated to active host servers in the Vancouver (VAN) datacenter cluster across the target ESXi hosts and target datastores:
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
 | :--- | ---: | ---: | ---: |
 | `explw-db01` | 12 | 32 | 1,702.49 |
@@ -62,7 +62,7 @@ The following 11 active workloads currently hosted on `WVESXI02` will be migrate
 | **TOTAL** | **104 vCPU** | **442 GB** | **~10,058 GB (~10.05 TB)** |
 
 ##### Virtual Machine Inventory (BCP Migration)
-The following 9 active workloads currently hosted on `WVESXI02` will be migrated to `WVESXI01` or `WVESXI03`:
+The following virtual machines currently hosted on `WVESXI02` will be migrated to `WVESXI01` or `WVESXI03`:
 
 | Name | NumCpu | MemoryGB | ProvisionedDiskGB |
 | :--- | ---: | ---: | ---: |
@@ -134,8 +134,8 @@ vCenter Deployment (`VANVCENTER02`):
 Deploy and configure a clean vCenter Server Appliance (VCSA) instance: `VANVCENTER02`.
 Configure Single Sign-On (SSO) domain integration, licensing, roles, and access controls.
 Register upgraded and relocated ESXi hosts under the management of `VANVCENTER02`.
-Phase 5: Additional Host Workload Migrations
-With the upgraded host infrastructure and target management plane operational, relocate remaining BCP workloads.
+Phase 5: Additional Host Virtual Machine Migrations
+With the upgraded host infrastructure and target management plane operational, relocate remaining BCP virtual machines.
 VM Migration (`WVESXI01`): Migrate active VMs from `WVESXI01` into the consolidated VAN cluster.
 VM Migration (`WVESXI03`): Migrate active VMs from `WVESXI03` into the consolidated VAN cluster.
 Phase 6: Workstation Relocation
@@ -146,7 +146,7 @@ Re-establish backup pipelines and data protection post-migration.
 
 #### Veeam Infrastructure Configuration
 - Install and configure Veeam Backup & Replication components on `BACKUP02` to function as a dedicated backup proxy and repository.
-- Update Veeam backup jobs to discover and protect workloads via the new `VANVCENTER02` vCenter instance.
+- Update Veeam backup jobs to discover and protect virtual machines via the new `VANVCENTER02` vCenter instance.
 - Execute active full backup jobs across all jobs to establish new recovery point baselines.
 
 ### Phase 8: Datacenter Environmental Optimization
