@@ -136,10 +136,10 @@ Modernize the management plane by deploying a new vCenter Server Appliance.
 
 #### Implementation Steps
 
-##### vCenter Deployment (`VANVCENTER02`)
+##### 1. vCenter Deployment (`VANVCENTER02`)
 - Deploy and configure a clean vCenter Server Appliance (VCSA) instance: `VANVCENTER02`.
 - Configure Single Sign-On (SSO) domain integration, licensing, roles, and access controls.
-- Register upgraded and relocated ESXi hosts under the management of `VANVCENTER02`.
+- Register `VANESXI04` under the management of `VANVCENTER02`.
 
 
 
